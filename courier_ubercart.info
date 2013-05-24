@@ -1,0 +1,13 @@
+name = "Courier for Ubercart"
+description = "Courier Connector module for Ubercart"
+core = 6.x
+
+dependencies[] = uc_cart
+dependencies[] = uc_order
+dependencies[] = uc_product
+dependencies[] = uc_attribute
+dependencies[] = uc_catalog
+
+version = "6.x-1"
+core = "6.x"
+project = "courier_ubercart"
