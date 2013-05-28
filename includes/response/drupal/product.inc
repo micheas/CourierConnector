@@ -1,45 +1,45 @@
 <?php
 
-function courier_ubercart_get_product_mapping()
-{
-    $mapping = db_query("select * from {courier_product_mapping}");
-    
-    if(db_affected_rows($mapping) == 0)
-    {
-        //define the default mapping, and check the settings to see if there is new mapping defined
-        $item_mapping = array();
-        $item_mapping['title'] = 'Name';            
-        $item_mapping['body'] = 'SalesDescription';
-        $item_mapping['status'] = '{1}';
-        $item_mapping['promote'] = '{0}';
-        $item_mapping['sticky'] = '{0}';            
-        $item_mapping['sell_price'] = 'SalePrice';
-        $item_mapping['model'] = 'ManufacturerPartNumber';
-        $item_mapping['weight_units'] = '{lb}';
-        $item_mapping['weight'] = '{1}';
-        $item_mapping['height'] = '{1}';
-        $item_mapping['width'] = '{1}';
-        $item_mapping['height_units'] = '{in}';
-        $item_mapping['length_units'] = '{in}';
-        $item_mapping['length'] = '{1}';
-        $item_mapping['pkg_qty'] = '{1}';
-        $item_mapping['default_qty'] = '{1}';
-        $item_mapping['list_price'] = 'SalePrice';
-        $item_mapping['cost'] = '{0}';
-        $item_mapping['shippable'] = '{0}';   
-    }
-    else
-    {
-        $item_mapping = array();
-        
-        while($row = db_fetch_object($mapping))
-        {                        
-            $item_mapping[$row->uc_field] = $row;            
-        }
-    }
-    
-    return $item_mapping;
-}
+//function courier_ubercart_get_product_mapping()
+//{
+//    $mapping = db_query("select * from {courier_product_mapping}");
+//    
+//    if(db_affected_rows($mapping) == 0)
+//    {
+//        //define the default mapping, and check the settings to see if there is new mapping defined
+//        $item_mapping = array();
+//        $item_mapping['title'] = 'Name';            
+//        $item_mapping['body'] = 'SalesDescription';
+//        $item_mapping['status'] = '{1}';
+//        $item_mapping['promote'] = '{0}';
+//        $item_mapping['sticky'] = '{0}';            
+//        $item_mapping['sell_price'] = 'SalePrice';
+//        $item_mapping['model'] = 'ManufacturerPartNumber';
+//        $item_mapping['weight_units'] = '{lb}';
+//        $item_mapping['weight'] = '{1}';
+//        $item_mapping['height'] = '{1}';
+//        $item_mapping['width'] = '{1}';
+//        $item_mapping['height_units'] = '{in}';
+//        $item_mapping['length_units'] = '{in}';
+//        $item_mapping['length'] = '{1}';
+//        $item_mapping['pkg_qty'] = '{1}';
+//        $item_mapping['default_qty'] = '{1}';
+//        $item_mapping['list_price'] = 'SalePrice';
+//        $item_mapping['cost'] = '{0}';
+//        $item_mapping['shippable'] = '{0}';   
+//    }
+//    else
+//    {
+//        $item_mapping = array();
+//        
+//        while($row = db_fetch_object($mapping))
+//        {                        
+//            $item_mapping[$row->uc_field] = $row;            
+//        }
+//    }
+//    
+//    return $item_mapping;
+//}
 
 function courier_ubercart_process_product($objectType, $responseXml)
 {
@@ -105,7 +105,7 @@ function courier_ubercart_process_product($objectType, $responseXml)
         {                    
             $node = new stdClass();   
 
-            $item_mapping = courier_ubercart_get_product_mapping();
+            $item_mapping = courier_quickbooks_pos_get_mapped_field_list('product');
             
             try
             {	                            
