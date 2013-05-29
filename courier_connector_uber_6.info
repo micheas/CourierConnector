@@ -1,5 +1,5 @@
-name = "Courier for Ubercart"
-description = "Courier QBPOS Connector module for Ubercart"
+name = "Courier Connector for Ubercart"
+description = "Courier Connector Module for Ubercart"
 core = 6.x
 
 dependencies[] = uc_cart
@@ -10,4 +10,4 @@ dependencies[] = uc_catalog
 
 version = "6.x-1"
 core = "6.x"
-project = "courier_ubercart_qbpos"
+project = "courier_connector"

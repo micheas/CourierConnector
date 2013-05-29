@@ -4,10 +4,10 @@
 //object - the object that is being passed in
 //anything else will be looked up on the mapping
 
-function courier_ubercart_qbpos_retrieve_requests() {
-  require_once 'courier_ubercart_qbpos_mapping.inc';
+function courier_connector_retrieve_requests() {
+  require_once 'courier_connector_mapping.inc';
 
-  $request_parameters = file_get_contents(drupal_get_path('module', 'courier_ubercart_qbpos') . "/includes/" . "request_parameters.json");
+  $request_parameters = file_get_contents(drupal_get_path('module', 'courier_connector_uber_7') . "/includes/" . "request_parameters.json");
   $request_parameters=json_decode($request_parameters,true);
 
   $jobs = array();
@@ -27,7 +27,7 @@ function courier_ubercart_qbpos_retrieve_requests() {
 
     while($record = db_fetch_array($request_data)) {
    
-      courier_ubercart_qbpos_process_request($record['job_id'], $record['request_method'], $request_parameters, $record['request_data'], $record['request_type'], $courier_requests);
+      courier_connector_process_request($record['job_id'], $record['request_method'], $request_parameters, $record['request_data'], $record['request_type'], $courier_requests);
       
       $courier_requests["attrs"] = array("job_id" => $row['job_id'], "job_number" => $job_number);           
     }
@@ -63,7 +63,7 @@ function courier_ubercart_qbpos_retrieve_requests() {
 }
 
 //gather the data to generate the request
-function courier_ubercart_qbpos_process_request($job_id, $object_type, $parameters, $request_data, $request_type, &$requests_queued, $return_values = false) {     
+function courier_connector_process_request($job_id, $object_type, $parameters, $request_data, $request_type, &$requests_queued, $return_values = false) {     
 
   $data = unserialize($request_data);
  
@@ -96,7 +96,7 @@ function courier_ubercart_qbpos_process_request($job_id, $object_type, $paramete
               $object_record = $parameter['method']($object_record);                         
             }
             else {                        
-              $object_record = $parameter['method'](courier_ubercart_qbpos_get_value($reference_object, $parameter['object_id']));
+              $object_record = $parameter['method'](courier_connector_get_value($reference_object, $parameter['object_id']));
             }
                         
             $filter_passed = true;
@@ -123,24 +123,24 @@ function courier_ubercart_qbpos_process_request($job_id, $object_type, $paramete
               if(array_key_exists("sub_methods", $parameter)) {
                 foreach($parameter['sub_methods'] as $sub_method => $sub_method_id) {
 
-                  $sub_parameters = courier_ubercart_qbpos_get_request_parameters($sub_method);
+                  $sub_parameters = courier_connector_get_request_parameters($sub_method);
 
-                  $sub_method_id_value = courier_ubercart_qbpos_get_value($object_record, $sub_method_id);
+                  $sub_method_id_value = courier_connector_get_value($object_record, $sub_method_id);
 
-                  courier_ubercart_qbpos_process_request($job_id, $sub_method, $sub_parameters, serialize(array($sub_method . '_ids' => array($sub_method_id_value))), $request_type, $requests_queued);             
+                  courier_connector_process_request($job_id, $sub_method, $sub_parameters, serialize(array($sub_method . '_ids' => array($sub_method_id_value))), $request_type, $requests_queued);             
                 } 
               }                          
 
               //process the method request
-              $record = array_merge($record, courier_ubercart_qbpos_process_request_parameters($parameter, $object_record, $object_type));
+              $record = array_merge($record, courier_connector_process_request_parameters($parameter, $object_record, $object_type));
 
               if(array_key_exists("sub_arrays", $parameter)) {
                 //sub array, a sub supporting array its inside the request, like items on an order
                 foreach($parameter['sub_arrays'] as $sub_array_name => $sub_array_parameters) {
 
-                  $sub_parameters = courier_ubercart_qbpos_get_request_parameters($sub_array_name);
+                  $sub_parameters = courier_connector_get_request_parameters($sub_array_name);
 
-                  $sub_array = courier_ubercart_qbpos_get_value($reference_object, $sub_array_parameters['sub_array_key']);
+                  $sub_array = courier_connector_get_value($reference_object, $sub_array_parameters['sub_array_key']);
 
                   if(is_array($sub_array)) {                
 
@@ -154,7 +154,7 @@ function courier_ubercart_qbpos_process_request($job_id, $object_type, $paramete
                       $sub_array_ids[] = $sub_record[$sub_array_parameters['sub_id']];                  
                     }
 
-                    $record = array_merge($record, courier_ubercart_qbpos_process_request($job_id, $sub_array_name, $sub_parameters, serialize(array($sub_array_name . '_ids' => $sub_array_ids)), $request_type, $requests_queued, true));
+                    $record = array_merge($record, courier_connector_process_request($job_id, $sub_array_name, $sub_parameters, serialize(array($sub_array_name . '_ids' => $sub_array_ids)), $request_type, $requests_queued, true));
                   }
                 } 
               }
@@ -178,7 +178,7 @@ function courier_ubercart_qbpos_process_request($job_id, $object_type, $paramete
   }
 }
 
-function courier_ubercart_qbpos_process_request_parameters($parameters, $object_record, $object_type) {
+function courier_connector_process_request_parameters($parameters, $object_record, $object_type) {
   $record = array();
   
   $filter = null;
@@ -186,10 +186,10 @@ function courier_ubercart_qbpos_process_request_parameters($parameters, $object_
   if(array_key_exists("mapping_filter", $parameters))
     $filter = $parameters['mapping_filter'];
   
-  $mapped_fields = courier_ubercart_qbpos_get_mapped_field_list(strtolower($object_type) . "_request", $filter);
+  $mapped_fields = courier_connector_get_mapped_field_list(strtolower($object_type) . "_request", $filter);
   
   foreach($mapped_fields as $field) {        
-    $object_value = courier_ubercart_qbpos_map_value(strtolower($object_type) . "_request", $field, $object_record);           
+    $object_value = courier_connector_map_value(strtolower($object_type) . "_request", $field, $object_record);           
     
     if($object_value !== false && isset($object_value)) {
       $record[$field] = $object_value;      

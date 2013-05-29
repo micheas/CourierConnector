@@ -1,0 +1,70 @@
+{
+    "commerce": [
+        {
+            "SalesOrder": [
+                {
+                    "file": "commerce_order.inc",
+                    "method": "",                    
+                }                
+            ],    
+            "Invoice": [
+                {
+                    "file": "commerce_order.inc",
+                    "method": "",                    
+                }                
+            ],
+            "SalesReceipt": [
+                {
+                    "file": "commerce_order.inc",
+                    "method": "",                    
+                }                
+            ],    
+            "Customer": [
+                {
+                    "file": "user.inc",
+                    "method": "", 
+                }               
+            ],
+            "ItemInventory": [
+                {
+                    "file": "product.inc",
+                    "method": "", 
+                }
+            ]
+        }
+    ],
+    "ubercart": [
+        {
+            "SalesOrder": [
+                {
+                    "file": "uc_order.inc",
+                    "method": "", 
+                }                
+            ],
+             "Invoice": [
+                {
+                    "file": "uc_order.inc",
+                    "method": "",                    
+                }                
+            ],
+            "SalesReceipt": [
+                {
+                    "file": "uc_order.inc",
+                    "method": "",                    
+                }                
+            ],    
+            "Customer": [
+                {
+                    "file": "user.inc",
+                    "method": "", 
+                }
+            ],
+            "ItemInventory": [
+                {
+                    "file": "product.inc",
+                    "method": "", 
+                }
+            ]
+        }
+    ]
+}

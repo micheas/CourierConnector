@@ -1,7 +1,7 @@
 <?php
 
 //get a list of fields that have been mapped, this will be iterated to do the assignment
-function courier_ubercart_qbpos_get_mapped_field_list($type, $filter = null) {
+function courier_connector_get_mapped_field_list($type, $filter = null) {
   $query = "select distinct to_field from courier_mapping_to_{$type}";
   
   if(isset($filter)) {
@@ -15,19 +15,10 @@ function courier_ubercart_qbpos_get_mapped_field_list($type, $filter = null) {
   return $ret;
 }
 
-function courier_ubercart_qbpos_map_value($type, $to_field, $record) {
+function courier_connector_map_value($type, $to_field, $record) {
   
   $result = db_query("select map_to.default_value, map_to.commands, map_from.from_field, map_from.from_alternative, map_from.sort_order, map_from.commands from courier_mapping_to_{$type} map_to left join courier_mapping_from_{$type} map_from on map_from.to_{$type}_field_id = map_to.to_{$type}_field_id where map_to.to_field = '{$to_field}' order by sort_order asc");
-  
-//  $query = db_select("courier_mapping_to_{$type}", "map_to");
-//  $query->fields("map_to", array("default_value", "commands"));
-//  $query->fields("map_from", array("from_field", "from_alternative", "sort_order", "commands"));  
-//  $query->leftJoin("courier_mapping_from_{$type}", "map_from", "map_from.to_{$type}_field_id = map_to.to_{$type}_field_id");
-//  $query->condition("map_to.to_field", $to_field);
-//  $query->orderBy("sort_order", "ASC");
-//  
-//  $result = $query->execute();
-  
+
   $return_value = false;
   
   while($mapped_field = db_fetch_array($result))
@@ -38,13 +29,13 @@ function courier_ubercart_qbpos_map_value($type, $to_field, $record) {
     
     if(isset($from_field))
     {    
-      $from_value = courier_ubercart_qbpos_get_value($record, $from_field);
+      $from_value = courier_connector_get_value($record, $from_field);
 
       //check if the field specifed is null    
       if($from_value == '') {
         $from_alternative = $mapped_field['from_alternative']; 
         //$from_alternative_value = (string) trim($record->$from_alternative);
-        $from_alternative_value = courier_ubercart_qbpos_get_value($record, $from_alternative);
+        $from_alternative_value = courier_connector_get_value($record, $from_alternative);
 
         if($from_alternative_value == '') {
           if($mapped_field['default_value'] != '') {
@@ -53,25 +44,25 @@ function courier_ubercart_qbpos_map_value($type, $to_field, $record) {
                
         }
         else {
-            $from_alternative_value = courier_ubercart_qbpos_process_commands($record, $from_alternative_value, $from_alternative, $mapped_field['map_from_commands']);            
+            $from_alternative_value = courier_connector_process_commands($record, $from_alternative_value, $from_alternative, $mapped_field['map_from_commands']);            
             $return_value .= $from_alternative_value;
         } 
       }
       else {
-        $from_value = courier_ubercart_qbpos_process_commands($record, $from_value, $from_field, $mapped_field['map_from_commands']);            
+        $from_value = courier_connector_process_commands($record, $from_value, $from_field, $mapped_field['map_from_commands']);            
         $return_value .= $from_value;
       } 
     }
     else{
       //run the commands
-      $return_value = courier_ubercart_qbpos_process_commands($record, $mapped_field['default_value'], $to_field, $mapped_field['commands']);
+      $return_value = courier_connector_process_commands($record, $mapped_field['default_value'], $to_field, $mapped_field['commands']);
     }
   }
   
   return $return_value;
 }
 
-function courier_ubercart_qbpos_get_value($record, $field_name) {
+function courier_connector_get_value($record, $field_name) {
   if(is_object($record)) {
     $record = get_object_vars($record);
   }
@@ -113,7 +104,7 @@ function courier_ubercart_qbpos_get_value($record, $field_name) {
 /*
  * Process the record against a list of commands
  */
-function courier_ubercart_qbpos_process_commands($record, $field_value, $field_name, $commands) {
+function courier_connector_process_commands($record, $field_value, $field_name, $commands) {
   
   if(isset($commands))
   {
@@ -129,7 +120,7 @@ function courier_ubercart_qbpos_process_commands($record, $field_value, $field_n
         
         include_once "commands/{$parameters[1][0]}.inc";
 
-        $c = (string) "courier_ubercart_qbpos_command_{$parameters[1][0]}";
+        $c = (string) "courier_connector_command_{$parameters[1][0]}";
 
         $field_value = $c($field_value, $field_name, $parameters[2][0], $record);
       }    

@@ -5,11 +5,11 @@
  * Administrative callbacks for the courier quickbooks module.
  */
 
-
 /**
  * Builds the conifg form.
  */
-function courier_ubercart_qbpos_config_form(&$form_state) {
+function courier_connector_config_form(&$form_state) {
+   
   // Put fieldsets into vertical tabs
   $form_state['courier-settings'] = array('#type' => 'vertical_tabs');
 
@@ -43,6 +43,6 @@ function courier_ubercart_qbpos_config_form(&$form_state) {
 /**
  * Form validate handler for the courier_quickbooks_config_form.
  */
-function courier_ubercart_qbpos_config_form_validate(&$form_state) {
+function courier_connector_config_form_validate(&$form_state) {
   
 }

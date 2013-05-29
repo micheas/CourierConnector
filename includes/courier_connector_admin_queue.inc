@@ -3,7 +3,7 @@
 /**
  * Builds the conifg form.
  */
-function courier_ubercart_qbpos_queue_form(&$form_state) {
+function courier_connector_queue_form(&$form_state) {
   
   $form_state['courier-requests'] = array('#type' => 'vertical_tabs');
 
@@ -12,7 +12,7 @@ function courier_ubercart_qbpos_queue_form(&$form_state) {
       '#title' => t('Current Requests'),
       '#group' => 'courier-requests',
       '#weight' => -2,
-      '#theme' => 'courier_ubercart_qbpos_request_table',
+      '#theme' => 'courier_connector_request_table',
       '#tree' => TRUE,  
   );
 
@@ -137,7 +137,7 @@ function courier_ubercart_qbpos_queue_form(&$form_state) {
       '#type' => 'fieldset',
       '#group' => 'submit_write_order_request',
       '#title' => t('Select Order(s) to Download'),            
-      '#theme' => 'courier_ubercart_qbpos_order_table',
+      '#theme' => 'courier_connector_order_table',
       '#tree' => TRUE,
   );
 
@@ -197,7 +197,7 @@ function courier_ubercart_qbpos_queue_form(&$form_state) {
       '#type' => 'fieldset',
       '#group' => 'submit_write_product_request',
       '#title' => t('Select Products(s) to Download'),            
-      '#theme' => 'courier_ubercart_qbpos_product_table',
+      '#theme' => 'courier_connector_product_table',
       '#tree' => TRUE,
   );
 
@@ -232,7 +232,7 @@ function courier_ubercart_qbpos_queue_form(&$form_state) {
       '#type' => 'fieldset',
       '#group' => 'submit_write_customer_request',
       '#title' => t('Select Customer(s) to Download'),            
-      '#theme' => 'courier_ubercart_qbpos_customer_table',
+      '#theme' => 'courier_connector_customer_table',
       '#tree' => TRUE,
   );
 
@@ -256,7 +256,7 @@ function courier_ubercart_qbpos_queue_form(&$form_state) {
     '#value' => t('Submit Request to Queue'),
   );
 
-  //$form_state['#validate'][] = 'courier_ubercart_qbpos_queue_validate';
+  //$form_state['#validate'][] = 'courier_connector_queue_validate';
 
   return $form_state;
 }
@@ -264,11 +264,11 @@ function courier_ubercart_qbpos_queue_form(&$form_state) {
 /**
  * Form validate handler for the courier_quickbooks_config_form.
  */
-function courier_ubercart_qbpos_queue_validate(&$form_state) {
+function courier_connector_queue_validate(&$form_state) {
   
 }
 
-function theme_courier_ubercart_qbpos_order_table($variables) 
+function theme_courier_connector_order_table($variables) 
 {     
     $form_state = $variables['form'];
 
@@ -297,7 +297,7 @@ function theme_courier_ubercart_qbpos_order_table($variables)
     return $output;
 }
 
-function theme_courier_ubercart_qbpos_product_table($variables) 
+function theme_courier_connector_product_table($variables) 
 {     
     $form_state = $variables['form'];
 
@@ -325,7 +325,7 @@ function theme_courier_ubercart_qbpos_product_table($variables)
     return $output;
 }
 
-function theme_courier_ubercart_qbpos_customer_table($variables) 
+function theme_courier_connector_customer_table($variables) 
 {     
     $form_state = $variables['form'];
 
@@ -353,7 +353,7 @@ function theme_courier_ubercart_qbpos_customer_table($variables)
     return $output;
 }
 
-function theme_courier_ubercart_qbpos_request_table($variables) 
+function theme_courier_connector_request_table($variables) 
 {     
    $form_state = $variables['form'];
 
@@ -379,7 +379,7 @@ function theme_courier_ubercart_qbpos_request_table($variables)
     return $output;
 }
 //
-//function theme_courier_ubercart_qbpos_request_log_table($variables) 
+//function theme_courier_connector_request_log_table($variables) 
 //{     
 //   $form_state = $variables['form'];
 //
@@ -406,7 +406,7 @@ function theme_courier_ubercart_qbpos_request_table($variables)
 //    return $output;
 //}
 
-function courier_ubercart_qbpos_queue_form_submit(&$form_state) 
+function courier_connector_queue_form_submit(&$form_state) 
 {   
     switch($form_state_state['values']['courier-requests__active_tab'])
     {
@@ -417,7 +417,7 @@ function courier_ubercart_qbpos_queue_form_submit(&$form_state)
 //                                                            "request_method" => $form_state_state['values']['request_method'],
 //                                                            "parameters" => "{$form_state_state['values']['from_date']}~{$form_state_state['values']['to_date']}~{$form_state_state['values']['active']}~{$form_state_state['values']['ids']}~{$form_state_state['values']['fullnames']}"
 //                                                         )));
-          //courier_ubercart_qbpos_generate_read_request($form_state_state['values']['request_method'], "{$form_state_state['values']['from_date']}~{$form_state_state['values']['to_date']}~{$form_state_state['values']['active']}~{$form_state_state['values']['ids']}~{$form_state_state['values']['fullnames']}");
+          //courier_connector_generate_read_request($form_state_state['values']['request_method'], "{$form_state_state['values']['from_date']}~{$form_state_state['values']['to_date']}~{$form_state_state['values']['active']}~{$form_state_state['values']['ids']}~{$form_state_state['values']['fullnames']}");
           $request_data = array();
                       
           $request_data['TimeModified'] = $form_state_state['values']['from_date'];
