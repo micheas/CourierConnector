@@ -1,6 +1,6 @@
 <?php
 
-function courier_quickbooks_pos_command_multiply() {
+function courier_connector_command_multiply() {
   
 }
 

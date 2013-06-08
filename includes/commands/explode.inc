@@ -1,7 +1,6 @@
 <?php
 
-function courier_quickbooks_pos_command_explode($value, $field_name, $parameters)
-{
+function courier_connector_command_explode($value, $field_name, $parameters) {
   $parameters = explode(',', $parameters);
   
   $new_value = explode($parameters[0], $value);

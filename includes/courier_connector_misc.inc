@@ -82,23 +82,36 @@ function get_courier_menu() {
     'title' => 'Configuration',
     'description' => 'Configure settings for your QuickBooks Integration.',
     'page callback' => 'drupal_get_form',
-    'access arguments' => array('access administration pages'),
-    'page arguments' => array('courier_connector_config_form'),
+    'access arguments' => array('access administration pages'),    
     'type' => MENU_NORMAL_ITEM,
     'weight' => 50,
     'file' => 'includes/courier_connector_admin_config.inc',
   );
   
+  if(courier_connector_get_drupal_version() == 6) {
+    $items['admin/store/integration/config']['page arguments'] = array('courier_connector_config_form_6');
+  }
+  else {
+    $items['admin/store/integration/config']['page arguments'] = array('courier_connector_config_form');
+  }
+  
+  
   $items['admin/store/integration/log'] = array(
     'title' => 'Logs',
     'description' => 'Communication logs.',
     'page callback' => 'drupal_get_form',
-    'access arguments' => array('access administration pages'),
-    'page arguments' => array('courier_connector_logs_form'),
+    'access arguments' => array('access administration pages'),    
     'type' => MENU_NORMAL_ITEM,
     'weight' => 50,    
     'file' => 'includes/courier_connector_admin_log.inc',
   );
+  
+  if(courier_connector_get_drupal_version() == 6) {
+    $items['admin/store/integration/log']['page arguments'] = array('courier_connector_logs_form_6');
+  }
+  else {
+    $items['admin/store/integration/log']['page arguments'] = array('courier_connector_logs_form');
+  }
   
 //  $items['admin/store/integration/mapping'] = array(
 //    'title' => 'Field Mappings for the integration.',
@@ -199,9 +212,9 @@ function get_courier_connector_services_resources() {
       ),
     ),
     'update' => array(
-      'help' => 'Calls the processing of the pending data update requests',      
-      'file' => array('type' => 'inc', 'module' => 'courier_connector_uber_7', 'name' => 'includes/courier_connector_update'),      
-      'callback' => 'courier_connector_courier_update',
+      'help' => 'Calls the processing of a pending response',      
+      'file' => array('type' => 'inc', 'module' => 'courier_connector_uber_7', 'name' => 'includes/courier_connector_process_responses'),      
+      'callback' => 'courier_connector_process_response',
       'access callback' => 'courier_connector_access',
       'access arguments' => array('view'),
       'access arguments append' => TRUE,

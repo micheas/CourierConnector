@@ -1,6 +1,7 @@
 <?php
 
 require_once 'includes/courier_connector_misc.inc';
+define('COURIER_CONNECTOR_CART', 'commerce');
 
 function courier_connector_commerce_7_menu() {  
   return get_courier_menu();
@@ -34,17 +35,17 @@ function courier_connector_commerce_7_services_resources() {
  * implementation of hook_rest_server_request_parsers_alter()
  */
 function courier_connector_commerce_7_rest_server_request_parsers_alter(&$parsers) {
-  get_courier_connector_rest_server_request_parsers_alter(&$parsers);
+  get_courier_connector_rest_server_request_parsers_alter($parsers);
 }
  
 function courier_connector_commerce_7_rest_server_response_formatters_alter(&$formatters) {
-  get_courier_connector_rest_server_response_formatters_alter(&$formatters);
+  get_courier_connector_rest_server_response_formatters_alter($formatters);
 }
 
 /**
   * Implements hook_permission().
   */
-function courier_connector_uber_6_permission() { 
+function courier_connector_commerce_7_permission() { 
   return get_courier_connector_permission();
 }
 

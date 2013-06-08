@@ -2,27 +2,62 @@
 
 //get a list of fields that have been mapped, this will be iterated to do the assignment
 function courier_connector_get_mapped_field_list($type, $filter = null) {
-  $query = "select distinct to_field from courier_mapping_to_{$type}";
+  if (courier_connector_get_drupal_version() == "6") {
+    $query = "select distinct to_field from courier_mapping_to_{$type}";
+
+    if(isset($filter)) {
+      $query .= " where to_field like {$filter}%";
+    }
+    $q = db_query($query);
+    while($row = db_fetch_array($q)) {        
+        $ret[] = $row['to_field'];
+    }
+
+    return $ret;
+  }
+  
+  $query = db_select("courier_mapping_to_{$type}", "map_to");  
+  $query->fields("map_to", array("to_field"));      
   
   if(isset($filter)) {
-    $query .= " where to_field like {$filter}%";
+    $query->condition("to_field", $filter . "%", "LIKE");
   }
-  $q = db_query($query);
-  while($row = db_fetch_array($q)) {        
-      $ret[] = $row['to_field'];
+    
+  $results = $query->execute();
+  
+  $ret = array();
+  foreach($results as $result) {
+    $ret[] = $result->to_field;
   }
-
+  
   return $ret;
 }
 
 function courier_connector_map_value($type, $to_field, $record) {
   
-  $result = db_query("select map_to.default_value, map_to.commands, map_from.from_field, map_from.from_alternative, map_from.sort_order, map_from.commands from courier_mapping_to_{$type} map_to left join courier_mapping_from_{$type} map_from on map_from.to_{$type}_field_id = map_to.to_{$type}_field_id where map_to.to_field = '{$to_field}' order by sort_order asc");
+  $mapped_fields = array();
+  
+  if (courier_connector_get_drupal_version() == "6") {
+    $result = db_query("select map_to.default_value, map_to.commands, map_from.from_field, map_from.from_alternative, map_from.sort_order, map_from.commands from courier_mapping_to_{$type} map_to left join courier_mapping_from_{$type} map_from on map_from.to_{$type}_field_id = map_to.to_{$type}_field_id where map_to.to_field = '{$to_field}' order by sort_order asc");
+    $mapped_fields = db_fetch_array($result);
+  }
+  else {      
+    $query = db_select("courier_mapping_to_{$type}", "map_to");
+    $query->fields("map_to", array("default_value", "commands"));
+    $query->fields("map_from", array("from_field", "from_alternative", "sort_order", "commands"));  
+    $query->leftJoin("courier_mapping_from_{$type}", "map_from", "map_from.to_{$type}_field_id = map_to.to_{$type}_field_id");
+    $query->condition("map_to.to_field", $to_field);
+    $query->orderBy("sort_order", "ASC");
 
+    $mapped_fields = $query->execute();
+  }
+  
   $return_value = false;
   
-  while($mapped_field = db_fetch_array($result))
+  foreach($mapped_fields as $mapped_field)
   {
+    $mapped_field = (array) $mapped_field;
+    
     //process the logic according to the mapping          
     
     $from_field = $mapped_field['from_field'];
@@ -99,6 +134,8 @@ function courier_connector_get_value($record, $field_name) {
   
   return false;
 }
+
+//ADD IN ACTIVE COMMAND, to mapping, if active is false ignore the mapping, dont push any value
         
 
 /*

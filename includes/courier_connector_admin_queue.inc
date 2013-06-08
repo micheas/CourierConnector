@@ -1,13 +1,16 @@
 <?php
 
+function courier_connector_queue_form_6(&$form_state) {
+  courier_connector_queue_form($form_state, null);
+}
 /**
  * Builds the conifg form.
  */
-function courier_connector_queue_form(&$form_state) {
+function courier_connector_queue_form($form, &$form_state) {
   
-  $form_state['courier-requests'] = array('#type' => 'vertical_tabs');
+  $form['courier-requests'] = array('#type' => 'vertical_tabs');
 
-  $form_state['current_requests'] = array(
+  $form['current_requests'] = array(
       '#type' => 'fieldset',
       '#title' => t('Current Requests'),
       '#group' => 'courier-requests',
@@ -20,37 +23,37 @@ function courier_connector_queue_form(&$form_state) {
 
   foreach ($result as $row) 
   {         
-      $form_state['current_requests']['job_date'][$row->job_id] = array('#markup' => check_plain($row->job_date));
+      $form['current_requests']['job_date'][$row->job_id] = array('#markup' => check_plain($row->job_date));
 
-      $form_state['current_requests']['job_id'][$row->job_id] = array('#markup' => "{$row->job_id}");
-      $form_state['current_requests']['request_method'][$row->job_id] = array('#markup' => "{$row->request_method}");
+      $form['current_requests']['job_id'][$row->job_id] = array('#markup' => "{$row->job_id}");
+      $form['current_requests']['request_method'][$row->job_id] = array('#markup' => "{$row->request_method}");
       
       $request_data = var_export(unserialize($row->request_data), true);
       
-      $form_state['current_requests']['request_data'][$row->job_id] = array('#markup' => "{$request_data}");
+      $form['current_requests']['request_data'][$row->job_id] = array('#markup' => "{$request_data}");
       
-      $form_state['current_requests']['remove_job'][$row->job_id] = array(    
+      $form['current_requests']['remove_job'][$row->job_id] = array(    
                                                       '#type' => 'button',       
                                                       //'#default_value' => ($row->qb_field == "Custom" ? $row->custom_value : ''),
                                                       '#value' => "Remove"
                                                       ); 
   }
 
-  $form_state['submit_read_request'] = array(
+  $form['submit_read_request'] = array(
       '#type' => 'fieldset',
       '#title' => t('Submit Read Request'),
       '#group' => 'courier-requests',
       '#weight' => -1,
   ); 
 
-//    $form_state['submit_request']['request_type'] = array(
+//    $form['submit_request']['request_type'] = array(
 //      '#type' => 'select',
 //      '#title' => t('Request Type'),
 //      '#default_value' => t('read'),
 //      '#options' => array("read" => "Read Request", "write" => "Write Request"),       
 //    ); 
 
-  $form_state['submit_read_request']['request_method'] = array(
+  $form['submit_read_request']['request_method'] = array(
     '#type' => 'select',
     '#title' => t('Request Method'),
     '#default_value' => t('AssemblyItem'),
@@ -68,7 +71,7 @@ function courier_connector_queue_form(&$form_state) {
                        ),      
   ); 
 
-  $form_state['submit_read_request']['from_date'] = array(
+  $form['submit_read_request']['from_date'] = array(
     '#type' => 'textfield',
     '#title' => t('From Time Modified'),
     '#default_value' => t('1/1/2001'), 
@@ -76,7 +79,7 @@ function courier_connector_queue_form(&$form_state) {
     '#description' => t('Format the date as 1/1/2001 HH:MM:SS or just 1/1/2001'),
   ); 
 
-//  $form_state['submit_read_request']['to_date'] = array(
+//  $form['submit_read_request']['to_date'] = array(
 //    '#type' => 'textfield',
 //    '#title' => t('To Time Modified'),
 //    '#default_value' => t(''), 
@@ -84,7 +87,7 @@ function courier_connector_queue_form(&$form_state) {
 //    '#description' => t('Format the date as 1/1/2001 HH:MM:SS or just 1/1/2001'),
 //  ); 
 
-//  $form_state['submit_read_request']['active'] = array(
+//  $form['submit_read_request']['active'] = array(
 //    '#type' => 'select',
 //    '#title' => t('Active Status'),
 //    '#default_value' => t(''),
@@ -94,7 +97,7 @@ function courier_connector_queue_form(&$form_state) {
 //                       ),      
 //  ); 
 
-  $form_state['submit_read_request']['ids'] = array(
+  $form['submit_read_request']['ids'] = array(
     '#type' => 'textfield',
     '#title' => t('Specific ID'),
     '#default_value' => t(''), 
@@ -102,7 +105,7 @@ function courier_connector_queue_form(&$form_state) {
     '#description' => t('Specific Item ID to Request'),
   ); 
 
-  $form_state['submit_read_request']['desc1'] = array(
+  $form['submit_read_request']['desc1'] = array(
     '#type' => 'textfield',
     '#title' => t('Description 1'),
     '#default_value' => t(''), 
@@ -110,19 +113,19 @@ function courier_connector_queue_form(&$form_state) {
     '#description' => t('The description 1 value of the item'),
   ); 
 
-  $form_state['submit_read_request']['submit'] = array(
+  $form['submit_read_request']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit Request to Queue'),
   );
 
- $form_state['submit_write_order_request'] = array(
+ $form['submit_write_order_request'] = array(
       '#type' => 'fieldset',
       '#title' => t('Submit Write Order Request'),
       '#group' => 'courier-requests',
       '#weight' => 0,
   );
 
- $form_state['submit_write_order_request']['order_type'] = array(
+ $form['submit_write_order_request']['order_type'] = array(
     '#type' => 'select',
     '#title' => t('Order Type'),
     '#default_value' => t('SalesReceipt'),
@@ -133,7 +136,7 @@ function courier_connector_queue_form(&$form_state) {
                        ),      
   ); 
 
-  $form_state['submit_write_order_request']['orders'] = array(
+  $form['submit_write_order_request']['orders'] = array(
       '#type' => 'fieldset',
       '#group' => 'submit_write_order_request',
       '#title' => t('Select Order(s) to Download'),            
@@ -147,41 +150,41 @@ function courier_connector_queue_form(&$form_state) {
 //
 //  foreach ($result as $row) 
 //  {                   
-//      $form_state['submit_write_order_request']['orders']['add'][$row->order_id] = array(    
+//      $form['submit_write_order_request']['orders']['add'][$row->order_id] = array(    
 //                                                                                      '#type' => 'checkbox',                                                                                            
 //                                                                                  );
-//      $form_state['submit_write_order_request']['orders']['order_id'][$row->order_id] = array('#markup' => check_plain($row->order_id));
-//      $form_state['submit_write_order_request']['orders']['customer'][$row->order_id] = array('#markup' => check_plain($row->customer));                                                        
-//      $form_state['submit_write_order_request']['orders']['total'][$row->order_id] = array('#markup' => check_plain($row->order_total));
-//      $form_state['submit_write_order_request']['orders']['purchase_date'][$row->order_id] = array('#markup' => check_plain(gmdate("M d Y H:i:s", $row->created)));
-//      $form_state['submit_write_order_request']['orders']['status'][$row->order_id] = array('#markup' => check_plain($row->order_status));
+//      $form['submit_write_order_request']['orders']['order_id'][$row->order_id] = array('#markup' => check_plain($row->order_id));
+//      $form['submit_write_order_request']['orders']['customer'][$row->order_id] = array('#markup' => check_plain($row->customer));                                                        
+//      $form['submit_write_order_request']['orders']['total'][$row->order_id] = array('#markup' => check_plain($row->order_total));
+//      $form['submit_write_order_request']['orders']['purchase_date'][$row->order_id] = array('#markup' => check_plain(gmdate("M d Y H:i:s", $row->created)));
+//      $form['submit_write_order_request']['orders']['status'][$row->order_id] = array('#markup' => check_plain($row->order_status));
 //  }
 
-  $form_state['submit_write_order_request']['submit'] = array(
+  $form['submit_write_order_request']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit Request to Queue'),
   );
 
-  $form_state['submit_write_payment_request'] = array(
+  $form['submit_write_payment_request'] = array(
       '#type' => 'fieldset',
       '#title' => t('Submit Payment Request'),
       '#group' => 'courier-requests',
       '#weight' => 1,
   ); 
 
-  $form_state['submit_write_payment_request']['submit'] = array(
+  $form['submit_write_payment_request']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit Request to Queue'),
   );
 
-  $form_state['submit_write_product_request'] = array(
+  $form['submit_write_product_request'] = array(
       '#type' => 'fieldset',
       '#title' => t('Submit Write Product Request'),
       '#group' => 'courier-requests',
       '#weight' => 2,
   ); 
 
-  $form_state['submit_write_product_request']['product_type'] = array(
+  $form['submit_write_product_request']['product_type'] = array(
     '#type' => 'select',
     '#title' => t('Product Type'),
     '#default_value' => t('SalesReceipt'),
@@ -193,7 +196,7 @@ function courier_connector_queue_form(&$form_state) {
                        ),  
   ); 
 
-  $form_state['submit_write_product_request']['products'] = array(
+  $form['submit_write_product_request']['products'] = array(
       '#type' => 'fieldset',
       '#group' => 'submit_write_product_request',
       '#title' => t('Select Products(s) to Download'),            
@@ -207,28 +210,28 @@ function courier_connector_queue_form(&$form_state) {
 //
 //  foreach ($result as $row) 
 //  {                   
-//      $form_state['submit_write_product_request']['products']['add'][$row->nid] = array(    
+//      $form['submit_write_product_request']['products']['add'][$row->nid] = array(    
 //                                                                                      '#type' => 'checkbox',                                                                                            
 //                                                                                  );
-//      $form_state['submit_write_product_request']['products']['nid'][$row->nid] = array('#markup' => check_plain($row->nid));
-//      $form_state['submit_write_product_request']['products']['title'][$row->nid] = array('#markup' => check_plain($row->title));                                                        
-//      $form_state['submit_write_product_request']['products']['sell_price'][$row->nid] = array('#markup' => check_plain($row->sell_price));
-//      $form_state['submit_write_product_request']['products']['model'][$row->nid] = array('#markup' => check_plain($row->model));       
+//      $form['submit_write_product_request']['products']['nid'][$row->nid] = array('#markup' => check_plain($row->nid));
+//      $form['submit_write_product_request']['products']['title'][$row->nid] = array('#markup' => check_plain($row->title));                                                        
+//      $form['submit_write_product_request']['products']['sell_price'][$row->nid] = array('#markup' => check_plain($row->sell_price));
+//      $form['submit_write_product_request']['products']['model'][$row->nid] = array('#markup' => check_plain($row->model));       
 //  }
 
-  $form_state['submit_write_product_request']['submit'] = array(
+  $form['submit_write_product_request']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit Request to Queue'),
   );
 
- $form_state['submit_write_customer_request'] = array(
+ $form['submit_write_customer_request'] = array(
       '#type' => 'fieldset',
       '#title' => t('Submit Write Customer Request'),
       '#group' => 'courier-requests',
       '#weight' => 3,
   ); 
 
- $form_state['submit_write_customer_request']['customers'] = array(
+ $form['submit_write_customer_request']['customers'] = array(
       '#type' => 'fieldset',
       '#group' => 'submit_write_customer_request',
       '#title' => t('Select Customer(s) to Download'),            
@@ -242,23 +245,23 @@ function courier_connector_queue_form(&$form_state) {
 //
 //  foreach ($result as $row) 
 //  {                   
-//      $form_state['submit_write_customer_request']['customers']['add'][$row->uid] = array(    
+//      $form['submit_write_customer_request']['customers']['add'][$row->uid] = array(    
 //                                                                                      '#type' => 'checkbox',                                                                                            
 //                                                                                  );
-//      $form_state['submit_write_customer_request']['customers']['uid'][$row->uid] = array('#markup' => check_plain($row->uid));
-//      $form_state['submit_write_customer_request']['customers']['name'][$row->uid] = array('#markup' => check_plain($row->name));                                                        
-//      $form_state['submit_write_customer_request']['customers']['email'][$row->uid] = array('#markup' => check_plain($row->mail));
-//      $form_state['submit_write_customer_request']['customers']['location'][$row->uid] = array('#markup' => check_plain($row->location));        
+//      $form['submit_write_customer_request']['customers']['uid'][$row->uid] = array('#markup' => check_plain($row->uid));
+//      $form['submit_write_customer_request']['customers']['name'][$row->uid] = array('#markup' => check_plain($row->name));                                                        
+//      $form['submit_write_customer_request']['customers']['email'][$row->uid] = array('#markup' => check_plain($row->mail));
+//      $form['submit_write_customer_request']['customers']['location'][$row->uid] = array('#markup' => check_plain($row->location));        
 //  }
 
- $form_state['submit_write_customer_request']['submit'] = array(
+ $form['submit_write_customer_request']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit Request to Queue'),
   );
 
-  //$form_state['#validate'][] = 'courier_connector_queue_validate';
+  //$form['#validate'][] = 'courier_connector_queue_validate';
 
-  return $form_state;
+  return $form;
 }
 
 /**

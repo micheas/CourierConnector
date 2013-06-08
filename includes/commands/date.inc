@@ -1,6 +1,6 @@
 <?php
 
-function courier_quickbooks_pos_command_date($value, $field_name, $parameters, $record) {
+function courier_connector_command_date($value, $field_name, $parameters, $record) {
  
   $new_value = date($parameters, $value);
   

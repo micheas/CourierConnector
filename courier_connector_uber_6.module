@@ -1,6 +1,7 @@
 <?php
 
 require_once 'includes/courier_connector_misc.inc';
+define('COURIER_CONNECTOR_CART', 'ubercart');
 
 function courier_connector_uber_6_menu()
 {  

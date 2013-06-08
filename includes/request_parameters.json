@@ -1,12 +1,22 @@
 {
-   "ItemInventory": [
-        {
-            "method": "node_load",
-            "object_id": "id"            
-        },
-        {
-            "method": "uc_product_load",
-            "object_id": "object"            
-        }
-    ]
-}
+   "commerce": {
+        "ItemInventory": [            
+            {
+                "method": "commerce_product_load",
+                "object_id": "id"            
+            }
+        ]
+   },
+   "ubercart": {
+        "ItemInventory": [
+            {
+                "method": "node_load",
+                "object_id": "id"            
+            },
+            {
+                "method": "uc_product_load",
+                "object_id": "object"            
+            }
+        ]
+     }
+   }

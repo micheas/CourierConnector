@@ -1,6 +1,6 @@
 <?php
 
-function courier_quickbooks_pos_command_remap() {
+function courier_connector_command_remap() {
   
 }
 

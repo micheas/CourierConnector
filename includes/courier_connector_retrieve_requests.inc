@@ -11,28 +11,62 @@ function courier_connector_retrieve_requests() {
   $request_parameters=json_decode($request_parameters,true);
 
   $jobs = array();
+  $job_ids = array();
   
-  //get a list of the job ids that we are going to process here
-  $result = db_query("Select job_id from courier_requests where processed = 0 order by job_date desc");
-  
+  if(courier_connector_get_drupal_version() == '6') {
+    //get a list of the job ids that we are going to process here
+    $result = db_query("Select job_id from courier_requests where processed = 0 order by job_date desc");
+    $job_ids = db_fetch_array($result);
+  }
+  else {
+      $job_ids = db_select("courier_requests")
+          ->fields("courier_requests", array("job_id"))
+          ->orderBy("job_date", "DESC")
+          ->condition("processed", "0")
+         ->execute();  
+  }
   $job_number = 0;
   
   $jobs['key'] = 'job_request';
   
-  while($row = db_fetch_array($result)) { 
+  foreach($job_ids as $job_id) {  
         
-    $request_data = db_query("select job_id, job_date, request_type, request_method, request_data from courier_requests where job_id = %d order by job_date asc", $row['job_id']);
+    $job_id = (array) $job_id;
     
     $courier_requests = array();
 
-    while($record = db_fetch_array($request_data)) {
+    $result = array();
+    if(courier_connector_get_drupal_version() == '6') {
+      $request_data = db_query("select job_id, job_date, request_type, request_method, request_data from courier_requests where job_id = %d order by job_date asc", $job_id['job_id']);           
+      $result = db_fetch_array($request_data);
+    }
+    else {
+      $query = db_select("courier_requests");
+      $query->fields("courier_requests", array("job_id", "job_date", "request_type", "request_method", "request_data"));  
+      $query->orderBy("job_date", "asc");  
+      $query->condition("job_id", $job_id['job_id']);
+      $result = $query->execute();  
+    }
+    
+    //while($record = db_fetch_array($request_data)) {
+    foreach($result as $record) { 
    
-      courier_connector_process_request($record['job_id'], $record['request_method'], $request_parameters, $record['request_data'], $record['request_type'], $courier_requests);
+      $record = (array) $record;
+      
+      courier_connector_process_request($record['job_id'], $record['request_method'], $request_parameters[COURIER_CONNECTOR_CART], $record['request_data'], $record['request_type'], $courier_requests);
       
       $courier_requests["attrs"] = array("job_id" => $row['job_id'], "job_number" => $job_number);           
     }
 
-    db_query("update courier_requests set processed = 1, processed_date = '%s' where job_id = %d", date( 'Y-m-d H:i:s', time()), $row['job_id']);
+    if(courier_connector_get_drupal_version() == '6') {
+      db_query("update courier_requests set processed = 1, processed_date = '%s' where job_id = %d", date( 'Y-m-d H:i:s', time()), $row['job_id']);
+    }
+    else {
+      $query = db_update("courier_requests");
+      $query->fields(array("processed" => 1, "processed_date" => date( 'Y-m-d H:i:s', time())));
+      $query->condition('job_id', $job_id->job_id);      
+      $query->execute(); 
+    }
 
     //should put the jobs into an array and that is what is returned
     //jobid => job
