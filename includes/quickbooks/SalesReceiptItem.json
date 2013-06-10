@@ -1,0 +1,43 @@
+{
+    "Fields": [
+        {
+            "Name": "ItemID"
+        },
+        {
+            "Name": "ItemName"
+        },
+        {
+            "Name": "ItemDescription"
+        },
+        {
+            "Name": "Quantity"
+        },
+        {
+            "Name": "UnitOfMeasure"
+        },
+        {
+            "Name": "Rate"
+        },
+        {
+            "Name": "RatePercent"
+        },
+        {
+            "Name": "ClassName"
+        },
+        {
+            "Name": "Amount"
+        },
+        {
+            "Name": "InventorySiteName"
+        },
+        {
+            "Name": "ServiceDate"
+        },
+        {
+            "Name": "Other1"
+        },
+        {
+            "Name": "Other2"
+        }
+    ]
+}

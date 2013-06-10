@@ -4,9 +4,15 @@
 //object - the object that is being passed in
 //anything else will be looked up on the mapping
 
-function courier_connector_retrieve_requests() {
+function courier_connector_retrieve_requests($job_id) {
   require_once 'courier_connector_mapping.inc';
 
+  //if a job id is passed in here then that triggers the processing of any xml in the reponse table for that job that needs to be processed
+  if(!is_null($job_id)) {
+    require_once 'courier_connector_process_responses.inc';
+    return courier_connector_process_response($job_id);
+  }
+  
   $request_parameters = file_get_contents(drupal_get_path('module', 'courier_connector_uber_7') . "/includes/" . "request_parameters.json");
   $request_parameters=json_decode($request_parameters,true);
 
@@ -55,16 +61,16 @@ function courier_connector_retrieve_requests() {
       
       courier_connector_process_request($record['job_id'], $record['request_method'], $request_parameters[COURIER_CONNECTOR_CART], $record['request_data'], $record['request_type'], $courier_requests);
       
-      $courier_requests["attrs"] = array("job_id" => $row['job_id'], "job_number" => $job_number);           
+      $courier_requests["attrs"] = array("job_id" => $record['job_id'], "job_number" => $job_number);           
     }
 
     if(courier_connector_get_drupal_version() == '6') {
-      db_query("update courier_requests set processed = 1, processed_date = '%s' where job_id = %d", date( 'Y-m-d H:i:s', time()), $row['job_id']);
+      db_query("update courier_requests set processed = 1, processed_date = '%s' where job_id = %d", date( 'Y-m-d H:i:s', time()), $job_id['job_id']);
     }
     else {
       $query = db_update("courier_requests");
       $query->fields(array("processed" => 1, "processed_date" => date( 'Y-m-d H:i:s', time())));
-      $query->condition('job_id', $job_id->job_id);      
+      $query->condition('job_id', $job_id['job_id']);      
       $query->execute(); 
     }
 
@@ -120,8 +126,9 @@ function courier_connector_process_request($job_id, $object_type, $parameters, $
         $object_record = array();
         $reference_object = array();
         
-        foreach($parameters as $parameter_type) {  
-          foreach($parameter_type as $parameter) {          
+        //foreach($parameters as $parameter_type) {          
+          //foreach($parameter_type as $parameter) {          
+        foreach($parameters[$object_type] as $parameter) {          
             if($parameter['object_id'] == 'id') {            
               $object_record = $parameter['method']($object_id);
               $reference_object = $object_record; //a copy of the original object for reference
@@ -157,22 +164,56 @@ function courier_connector_process_request($job_id, $object_type, $parameters, $
               if(array_key_exists("sub_methods", $parameter)) {
                 foreach($parameter['sub_methods'] as $sub_method => $sub_method_id) {
 
-                  $sub_parameters = courier_connector_get_request_parameters($sub_method);
+                  //$sub_parameters = $parameters[$sub_method];
 
                   $sub_method_id_value = courier_connector_get_value($object_record, $sub_method_id);
 
-                  courier_connector_process_request($job_id, $sub_method, $sub_parameters, serialize(array($sub_method . '_ids' => array($sub_method_id_value))), $request_type, $requests_queued);             
+                  courier_connector_process_request($job_id, $sub_method, $parameters, serialize(array($sub_method . '_ids' => array($sub_method_id_value))), $request_type, $requests_queued);             
                 } 
               }                          
 
               //process the method request
-              $record = array_merge($record, courier_connector_process_request_parameters($parameter, $object_record, $object_type));
+              $new_data = courier_connector_process_request_parameters($parameter, $object_record, $object_type);
+              
+              //add in the foreign id this value does not need to be in the mapping, should always be in there if needed              
+              if(array_key_exists('foreign_id', $parameter)) {                                
+                $foreign_id = courier_connector_get_value($object_record, $parameter['foreign_id'][key($parameter['foreign_id'])]);                                    
+                if($foreign_id != '') {                  
+                  $new_data[key($parameter['foreign_id'])] = $foreign_id;
+                }
+              }
+              
+              //this is only if we want to use the relation through auto magic and not a related value, for not relation is fine
+              //add any foreign relations, these are relations that are crossing item types, like items on an order
+              //the items are related to QB and this tells us that that foreign_id on the related field is 
+              //the value we want to use here
+//              if(array_key_exists('foreign_relation', $parameter)) {                
+//                //get the related object
+//                $relation_data = $parameters[$parameter['foreign_relation']['object_type']];
+//                foreach($relation_data as $r) {
+//                  
+//                  $id = courier_connector_get_value($object_record, $parameter['foreign_relation']['object_id']);
+//                  
+//                  $relation_object = $r['method']($id);
+//                  
+//                  $foreign_id = courier_connector_get_value($relation_object, $parameter['foreign_id'][key($parameter['foreign_id'])]);                                    
+//                  
+//                  if(!$foreign_id) {
+//                    //this is possible if the item is not related, this case may be a good idea to put the creatation into the request job list                                        
+//                  }
+//                  else {                  
+//                    $new_data[key($parameter['foreign_id'])] = $foreign_id;
+//                  }  
+//                }
+//              }
+              
+              $record = array_merge($record, $new_data);
 
               if(array_key_exists("sub_arrays", $parameter)) {
                 //sub array, a sub supporting array its inside the request, like items on an order
                 foreach($parameter['sub_arrays'] as $sub_array_name => $sub_array_parameters) {
 
-                  $sub_parameters = courier_connector_get_request_parameters($sub_array_name);
+                  //$sub_parameters = $parameters[$sub_array_name];
 
                   $sub_array = courier_connector_get_value($reference_object, $sub_array_parameters['sub_array_key']);
 
@@ -188,13 +229,13 @@ function courier_connector_process_request($job_id, $object_type, $parameters, $
                       $sub_array_ids[] = $sub_record[$sub_array_parameters['sub_id']];                  
                     }
 
-                    $record = array_merge($record, courier_connector_process_request($job_id, $sub_array_name, $sub_parameters, serialize(array($sub_array_name . '_ids' => $sub_array_ids)), $request_type, $requests_queued, true));
+                    $record = array_merge($record, courier_connector_process_request($job_id, $sub_array_name, $parameters, serialize(array($sub_array_name . '_ids' => $sub_array_ids)), $request_type, $requests_queued, true));
                   }
                 } 
               }
             }
           }
-        }
+        //}
         //put the order into the array
         if(count($record) > 0) {
           $data[$object_type . "s"][] = $record;

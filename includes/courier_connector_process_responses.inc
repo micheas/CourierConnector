@@ -5,7 +5,7 @@ function courier_connector_process_response($job_id)
 {     
   require_once "courier_connector_mapping.inc";
   require_once "courier_connector_misc.inc";
- 
+   
   $response_parameters = file_get_contents(drupal_get_path('module', 'courier_connector_uber_7') . "/includes/" . "response_parameters.json");
   $response_parameters=json_decode($response_parameters,true);
   
@@ -14,22 +14,25 @@ function courier_connector_process_response($job_id)
   }
   else {  
     $query = db_select("courier_responses");
-    $query->fields("courier_responses", array("response_xml", "job_id", "job_date", "status", "record_count", "number_of_chunks", "chunk_number"));
+    $query->fields("courier_responses", array("response_id", "response_xml", "job_id", "job_date", "status", "record_count", "number_of_chunks", "chunk_number"));
     $query->condition("courier_responses.job_id", $job_id);
+    $query->condition("processed", "0", "=");
     $query->orderBy("courier_responses.chunk_number", "DESC");  
 
-    $result = $query->execute();
-    
-    if(is_array($result))
-      $result = (array) $result;
+    $result = $query->execute();       
   }
   
   foreach ($result as $record) 
-  {                                    
+  {       
+      $record = (array) $record;
+    
       $doc = simplexml_load_string((string)$record['response_xml']);
 
       $method_name = (string) $doc->getName();
 
+      //remove the _Response
+      $method_name = str_replace('_Response', '', $method_name);
+      
       $message = "Processing response from job id: {$record['job_id']} chunk number: {$record['chunk_number']} of {$record['number_of_chunks']}";
 
       if($doc->ErrorMessage != '')
@@ -58,8 +61,19 @@ function courier_connector_process_response($job_id)
       }
 
       //call the function
-      require_once $response_parameters[COURIER_CONNECTOR_CART][$method_named]['file'];
-      $response_parameters[COURIER_CONNECTOR_CART][$method_named]['method']($doc);
+      require_once $response_parameters[COURIER_CONNECTOR_CART][$method_name]['file'];
+      $response_parameters[COURIER_CONNECTOR_CART][$method_name]['method']($doc);
+      
+      //mark the response processed and mark a date on it
+      if(courier_connector_get_drupal_version() == '6') {
+        db_query("update courier_responses set processed = 1, processed_date = '%s' where response_id = %d", date( 'Y-m-d H:i:s', time()), $record['response_id']);
+      }
+      else {
+        $query = db_update("courier_responses");
+        $query->fields(array("processed" => 1, "processed_date" => date( 'Y-m-d H:i:s', time())));
+        $query->condition('response_id', $record['response_id']);      
+        $query->execute(); 
+      }
   }
 
   return "done";

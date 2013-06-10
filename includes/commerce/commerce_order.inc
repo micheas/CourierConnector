@@ -1,62 +1,67 @@
 <?php
+//
+//function courier_quickbooks_pos_get_order_mapping()
+//{
+//    //define the default mapping, and check the settings to see if there is new mapping defined
+//    $mapping = array();
+//    $mapping['delivery_first_name'] = 'ShippingFirstName';   
+//    $mapping['delivery_last_name'] = 'ShippingLastName';   
+//    $mapping['delivery_street1'] = 'ShippingStreet';   
+//    $mapping['delivery_street2'] = 'ShippingStreet2';   
+//    $mapping['delivery_city'] = 'ShippingCity';   
+//    $mapping['delivery_zone'] = 'ShippingState';   
+//    $mapping['delivery_postal_code'] = 'ShippingPostalCode';   
+//    $mapping['delivery_country'] = 'ShippingCountry';   
+//    $mapping['billing_first_name'] = 'BillingFirstName';   
+//    $mapping['billing_last_name'] = 'BillingLastName';   
+//    $mapping['billing_street1'] = 'BillingStreet';   
+//    $mapping['billing_street2'] = 'BillingStreet2';   
+//    $mapping['billing_city'] = 'BillingCity';   
+//    $mapping['billing_zone'] = 'BillingState';   
+//    $mapping['billing_postal_code'] = 'BillingPostalCode';   
+//    $mapping['billing_country'] = 'BillingCountry';   
+//    $mapping['order_status'] = '{completed}';      
+//    
+//    return $mapping;
+//}
 
-function courier_quickbooks_pos_get_order_mapping()
-{
-    //define the default mapping, and check the settings to see if there is new mapping defined
-    $mapping = array();
-    $mapping['delivery_first_name'] = 'ShippingFirstName';   
-    $mapping['delivery_last_name'] = 'ShippingLastName';   
-    $mapping['delivery_street1'] = 'ShippingStreet';   
-    $mapping['delivery_street2'] = 'ShippingStreet2';   
-    $mapping['delivery_city'] = 'ShippingCity';   
-    $mapping['delivery_zone'] = 'ShippingState';   
-    $mapping['delivery_postal_code'] = 'ShippingPostalCode';   
-    $mapping['delivery_country'] = 'ShippingCountry';   
-    $mapping['billing_first_name'] = 'BillingFirstName';   
-    $mapping['billing_last_name'] = 'BillingLastName';   
-    $mapping['billing_street1'] = 'BillingStreet';   
-    $mapping['billing_street2'] = 'BillingStreet2';   
-    $mapping['billing_city'] = 'BillingCity';   
-    $mapping['billing_zone'] = 'BillingState';   
-    $mapping['billing_postal_code'] = 'BillingPostalCode';   
-    $mapping['billing_country'] = 'BillingCountry';   
-    $mapping['order_status'] = '{completed}';      
-    
-    return $mapping;
-}
-
-function courier_quickbooks_pos_get_product_line_mapping()
-{
-    //product mapping
-    
-    $product_mapping = array();
-    
-    $product_mapping['title'] = 'ItemName';   
-    $product_mapping['model'] = '';   
-    $product_mapping['qty'] = 'Quantity';   
-    $product_mapping['cost'] = 'Amount';   
-    $product_mapping['price'] = 'Amount';   
-    $product_mapping['weight'] = '{0}';   
-    $product_mapping['weight_units'] = '{lb}'; 
-    
-    return $product_mapping;
-}
+//function courier_quickbooks_pos_get_product_line_mapping()
+//{
+//    //product mapping
+//    
+//    $product_mapping = array();
+//    
+//    $product_mapping['title'] = 'ItemName';   
+//    $product_mapping['model'] = '';   
+//    $product_mapping['qty'] = 'Quantity';   
+//    $product_mapping['cost'] = 'Amount';   
+//    $product_mapping['price'] = 'Amount';   
+//    $product_mapping['weight'] = '{0}';   
+//    $product_mapping['weight_units'] = '{lb}'; 
+//    
+//    return $product_mapping;
+//}
 
 //processes a response xml
-function courier_quickbooks_pos_process_order($objectType, $responseXml)
+function courier_connector_commerce_process_order($responseXml)
 {
-    require_once 'field_processor.inc';
-
-    $field_config_data = db_query("select field_config_instance.field_name, field_config.type,
-                field_config.module from field_config_instance inner join field_config on field_config.id = field_config_instance.field_id
-                where field_config_instance.bundle = 'commerce_order' and field_config_instance.entity_type = 'commerce_order'")->fetchAllAssoc("field_name");
+    require_once 'field_processor.inc';    
   
     //write the error to some log if there was one
     if($responseXml->ErrorMessage != '')
     {
         //handle error
     }
+    
+    $objectType = (string) $responseXml->getName();
+
+    //remove the _Response
+    $objectType = str_replace('_Response', '', $objectType);
                 
+    $field_config_data = db_query("select field_config_instance.field_name, field_config.type,
+                field_config.module from field_config_instance inner join field_config on field_config.id = field_config_instance.field_id
+                where field_config_instance.bundle = 'commerce_order' and field_config_instance.entity_type = 'commerce_order'")->fetchAllAssoc("field_name");
+    
     $plural = $objectType . 's';
     $id = $objectType . 'ID';
     

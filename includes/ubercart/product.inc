@@ -41,7 +41,7 @@
 //    return $item_mapping;
 //}
 
-function courier_ubercart_process_product($objectType, $responseXml)
+function courier_connector_ubercart_process_product($objectType, $responseXml)
 {
     //write the error to some log if there was one
     if($responseXml->ErrorMessage != '')

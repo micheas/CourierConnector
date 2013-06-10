@@ -1,49 +1,49 @@
 <?php
 
-function courier_ubercart_get_order_mapping()
-{
-    //define the default mapping, and check the settings to see if there is new mapping defined
-    $mapping = array();
-    $mapping['delivery_first_name'] = 'ShippingFirstName';   
-    $mapping['delivery_last_name'] = 'ShippingLastName';   
-    $mapping['delivery_street1'] = 'ShippingStreet';   
-    $mapping['delivery_street2'] = 'ShippingStreet2';   
-    $mapping['delivery_city'] = 'ShippingCity';   
-    $mapping['delivery_zone'] = 'ShippingState';   
-    $mapping['delivery_postal_code'] = 'ShippingPostalCode';   
-    $mapping['delivery_country'] = 'ShippingCountry';   
-    $mapping['billing_first_name'] = 'BillingFirstName';   
-    $mapping['billing_last_name'] = 'BillingLastName';   
-    $mapping['billing_street1'] = 'BillingStreet';   
-    $mapping['billing_street2'] = 'BillingStreet2';   
-    $mapping['billing_city'] = 'BillingCity';   
-    $mapping['billing_zone'] = 'BillingState';   
-    $mapping['billing_postal_code'] = 'BillingPostalCode';   
-    $mapping['billing_country'] = 'BillingCountry';   
-    $mapping['order_status'] = '{completed}';      
-    
-    return $mapping;
-}
-
-function courier_ubercart_get_product_line_mapping()
-{
-    //product mapping
-    
-    $product_mapping = array();
-    
-    $product_mapping['title'] = 'ItemName';   
-    $product_mapping['model'] = '';   
-    $product_mapping['qty'] = 'Quantity';   
-    $product_mapping['cost'] = 'Amount';   
-    $product_mapping['price'] = 'Amount';   
-    $product_mapping['weight'] = '{0}';   
-    $product_mapping['weight_units'] = '{lb}'; 
-    
-    return $product_mapping;
-}
+//function courier_ubercart_get_order_mapping()
+//{
+//    //define the default mapping, and check the settings to see if there is new mapping defined
+//    $mapping = array();
+//    $mapping['delivery_first_name'] = 'ShippingFirstName';   
+//    $mapping['delivery_last_name'] = 'ShippingLastName';   
+//    $mapping['delivery_street1'] = 'ShippingStreet';   
+//    $mapping['delivery_street2'] = 'ShippingStreet2';   
+//    $mapping['delivery_city'] = 'ShippingCity';   
+//    $mapping['delivery_zone'] = 'ShippingState';   
+//    $mapping['delivery_postal_code'] = 'ShippingPostalCode';   
+//    $mapping['delivery_country'] = 'ShippingCountry';   
+//    $mapping['billing_first_name'] = 'BillingFirstName';   
+//    $mapping['billing_last_name'] = 'BillingLastName';   
+//    $mapping['billing_street1'] = 'BillingStreet';   
+//    $mapping['billing_street2'] = 'BillingStreet2';   
+//    $mapping['billing_city'] = 'BillingCity';   
+//    $mapping['billing_zone'] = 'BillingState';   
+//    $mapping['billing_postal_code'] = 'BillingPostalCode';   
+//    $mapping['billing_country'] = 'BillingCountry';   
+//    $mapping['order_status'] = '{completed}';      
+//    
+//    return $mapping;
+//}
+//
+//function courier_ubercart_get_product_line_mapping()
+//{
+//    //product mapping
+//    
+//    $product_mapping = array();
+//    
+//    $product_mapping['title'] = 'ItemName';   
+//    $product_mapping['model'] = '';   
+//    $product_mapping['qty'] = 'Quantity';   
+//    $product_mapping['cost'] = 'Amount';   
+//    $product_mapping['price'] = 'Amount';   
+//    $product_mapping['weight'] = '{0}';   
+//    $product_mapping['weight_units'] = '{lb}'; 
+//    
+//    return $product_mapping;
+//}
 
 //processes a response xml
-function courier_ubercart_process_order($objectType, $responseXml)
+function courier_connector_ubercart_process_order($objectType, $responseXml)
 {
     //write the error to some log if there was one
     if($responseXml->ErrorMessage != '')

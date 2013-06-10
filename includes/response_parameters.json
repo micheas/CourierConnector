@@ -1,70 +1,54 @@
 {
-    "commerce": [
-        {
-            "SalesOrder": [
-                {
-                    "file": "commerce_order.inc",
-                    "method": "",                    
-                }                
-            ],    
-            "Invoice": [
-                {
-                    "file": "commerce_order.inc",
-                    "method": "",                    
-                }                
-            ],
-            "SalesReceipt": [
-                {
-                    "file": "commerce_order.inc",
-                    "method": "",                    
-                }                
-            ],    
-            "Customer": [
-                {
-                    "file": "user.inc",
-                    "method": "", 
-                }               
-            ],
-            "ItemInventory": [
-                {
-                    "file": "product.inc",
-                    "method": "", 
-                }
-            ]
+    "commerce": {
+        "SalesOrder": {
+            "file": "commerce/commerce_order.inc",
+            "method": "courier_connector_commerce_process_order"
+        },
+        "Invoice": {
+            "file": "commerce/commerce_order.inc",
+            "method": "courier_connector_commerce_process_order"
+        },
+        "SalesReceipt": {
+            "file": "commerce/commerce_order.inc",
+            "method": "courier_connector_commerce_process_order"
+        },
+        "Customer": {
+            "file": "commerce/user.inc",
+            "method": "courier_connector_commerce_process_user"
+        },
+        "InventoryItem": {
+            "file": "commerce/product.inc",
+            "method": "courier_connector_commerce_process_product"
+        },
+        "NonInventoryItem": {
+            "file": "commerce/product.inc",
+            "method": "courier_connector_commerce_process_product"
         }
-    ],
-    "ubercart": [
-        {
-            "SalesOrder": [
-                {
-                    "file": "uc_order.inc",
-                    "method": "", 
-                }                
-            ],
-             "Invoice": [
-                {
-                    "file": "uc_order.inc",
-                    "method": "",                    
-                }                
-            ],
-            "SalesReceipt": [
-                {
-                    "file": "uc_order.inc",
-                    "method": "",                    
-                }                
-            ],    
-            "Customer": [
-                {
-                    "file": "user.inc",
-                    "method": "", 
-                }
-            ],
-            "ItemInventory": [
-                {
-                    "file": "product.inc",
-                    "method": "", 
-                }
-            ]
+    },
+    "ubercart": {
+        "SalesOrder": {
+            "file": "ubercart/uc_order.inc",
+            "method": "courier_connector_ubercart_process_order"
+        },
+        "Invoice": {
+            "file": "ubercart/uc_order.inc",
+            "method": "courier_connector_ubercart_process_order"
+        },
+        "SalesReceipt": {
+            "file": "ubercart/uc_order.inc",
+            "method": "courier_connector_ubercart_process_order"
+        },
+        "Customer": {
+            "file": "ubercart/user.inc",
+            "method": "courier_connector_ubercart_process_user"
+        },
+        "InventoryItem": {
+            "file": "ubercart/product.inc",
+            "method": "courier_connector_ubercart_process_product"
+        },
+        "NonInventoryItem": {
+            "file": "ubercart/product.inc",
+            "method": "courier_connector_ubercart_process_product"
         }
-    ]
+    }
 }

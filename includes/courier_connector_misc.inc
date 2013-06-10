@@ -202,13 +202,20 @@ function get_courier_connector_services_resources() {
  return array(
   'CourierConnector' => array(          
     'index' => array(
-      'help' => 'Retrieves open requests',      
+      'help' => 'Retrieves open requests, if the job_id is passed will call the processing of that job response',      
       'file' => array('type' => 'inc', 'module' => 'courier_connector_uber_7', 'name' => 'includes/courier_connector_retrieve_requests'),      
       'callback' => 'courier_connector_retrieve_requests',
       'access callback' => 'courier_connector_access',
       'access arguments' => array('view'),
       'access arguments append' => TRUE,
-      'args' => array(              
+      'args' => array(          
+          array(
+              'name' => 'job_id',
+              'optional' => TRUE,
+              'source' => array('path' => '0'),
+              'description' => '',
+              'type' => 'int',
+            ), 
       ),
     ),
     'update' => array(

@@ -1,0 +1,260 @@
+{
+  "Fields":
+  [
+    {
+      "Name":"FullName",
+      "Defaults": {
+        "Commerce": {
+          "Request": {
+            "from_field":"",
+            "from_alternative":"",
+            "from_sort":"",
+            "from_commands":"",
+            "to_field": "",
+            "to_default_value": "",
+            "to_commands": "",
+          },
+          "Response": {
+            "from_field":"",
+            "from_alternative":"",
+            "from_sort":"",
+            "from_commands":"",
+            "to_field": "",
+            "to_default_value": "",
+            "to_commands": "",
+          }
+        },
+        "Ubercart": {
+          "Request": {
+            "from_field":"",
+            "from_alternative":"",
+            "from_sort":"",
+            "from_commands":"",
+            "to_field": "",
+            "to_default_value": "",
+            "to_commands": "",
+          },
+          "Response": {
+            "from_field":"",
+            "from_alternative":"",
+            "from_sort":"",
+            "from_commands":"",
+            "to_field": "",
+            "to_default_value": "",
+            "to_commands": "",
+          }        
+        }
+      }
+    },
+    {
+      "Name":"IsActive",
+      "Defaults": {
+        "Commerce": {
+          "Request": {
+            "from_field":"",
+            "from_alternative":"",
+            "from_sort":"",
+            "from_commands":"",
+            "to_field": "",
+            "to_default_value": "",
+            "to_commands": "",
+          },
+          "Response": {
+            "from_field":"",
+            "from_alternative":"",
+            "from_sort":"",
+            "from_commands":"",
+            "to_field": "",
+            "to_default_value": "",
+            "to_commands": "",
+          }
+        },
+        "Ubercart": {
+          "Request": {
+            "from_field":"",
+            "from_alternative":"",
+            "from_sort":"",
+            "from_commands":"",
+            "to_field": "",
+            "to_default_value": "",
+            "to_commands": "",
+          },
+          "Response": {
+            "from_field":"",
+            "from_alternative":"",
+            "from_sort":"",
+            "from_commands":"",
+            "to_field": "",
+            "to_default_value": "",
+            "to_commands": "",
+          }        
+        }
+      }
+    },
+    {
+      "Name":"FullName",
+    },
+    {
+      "Name":"ParentID",
+    },
+    {
+      "Name":"ParentName",
+    },
+    {
+      "Name":"CompanyName",
+    },
+    {
+      "Name":"Salutation",
+    },
+    {
+      "Name":"FirstName",
+    },
+    {
+      "Name":"MiddleName",
+    },
+    {
+      "Name":"LastName",
+    },
+    {
+      "Name":"BillingAddress1",
+    },
+    {
+      "Name":"BillingAddress2",
+    },
+    {
+      "Name":"BillingAddress3",
+    },
+    {
+      "Name":"BillingAddress4",
+    },
+    {
+      "Name":"BillingAddress5",
+    },
+    {
+      "Name":"BillingCity",
+    },
+    {
+      "Name":"BillingState",
+    },
+    {
+      "Name":"BillingPostalCode",
+    },
+    {
+      "Name":"BillingCountry",
+    },
+    {
+      "Name":"BillingNote",
+    },
+    {
+      "Name":"ShippingAddress1",
+    },
+    {
+      "Name":"ShippingAddress2",
+    },
+    {
+      "Name":"ShippingAddress3",
+    },
+    {
+      "Name":"ShippingAddress4",
+    },
+    {
+      "Name":"ShippingAddress5",
+    },
+    {
+      "Name":"ShippingCity",
+    },
+    {
+      "Name":"ShippingState",
+    },
+    {
+      "Name":"ShippingPostalCode",
+    },
+    {
+      "Name":"ShippingCountry",
+    },
+    {
+      "Name":"ShippingNote",
+    },
+    {
+      "Name":"Phone",
+    },
+    {
+      "Name":"AltPhone",
+    },
+    {
+      "Name":"Fax",
+    },
+    {
+      "Name":"Email",
+    },
+    {
+      "Name":"Contact",
+    },
+    {
+      "Name":"AltContact",
+    },
+    {
+      "Name":"CustomerTypeName",
+    },
+    {
+      "Name":"CustomerTermsName",
+    },
+    {
+      "Name":"SalesRepRefName",
+    },
+    {
+      "Name":"Balance",
+    },
+    {
+      "Name":"TotalBalance",
+    },
+    {
+      "Name":"SalesTaxCodeName",
+    },
+    {
+      "Name":"ItemSalesTaxName",
+    },
+    {
+      "Name":"ItemSalesTaxName",
+    },
+    {
+      "Name":"ResaleNumber",
+    },
+    {
+      "Name":"AccountNumber",
+    },
+    {
+      "Name":"CreditLimit",
+    },
+    {
+      "Name":"PreferredPaymentMethodName",
+    },
+    {
+      "Name":"JobStatus",
+    },
+    {
+      "Name":"JobStartDate",
+    },
+    {
+      "Name":"JobProjectedEndDate",
+    },
+    {
+      "Name":"JobEndDate",
+    },
+    {
+      "Name":"JobDesc",
+    },
+    {
+      "Name":"JobTypeRefName",
+    },
+    {
+      "Name":"Notes",
+    },
+    {
+      "Name":"PriceLevelRefName",
+    },
+    {
+      "Name":"CurrencyName",
+    }
+  ]
+}

@@ -1,51 +1,61 @@
 <?php
+//
+//function courier_ubercart_get_user_mapping()
+//{
+//    //define the default mapping, and check the settings to see if there is new mapping defined
+//    $mapping = array();
+//    $mapping['name'] = 'CustomerRecordName';            
+//    $mapping['pass'] = 'Notes';            
+//    $mapping['mail'] = 'Email';            
+//    $mapping['status'] = '{1}';    
+//
+//    return $mapping;            
+//}
+//
+//function courier_ubercart_get_user_order_mapping()
+//{
+//    //define the default mapping, and check the settings to see if there is new mapping defined
+//    $mapping = array();
+//    $mapping['delivery_first_name'] = 'ShippingFirstName';   
+//    $mapping['delivery_last_name'] = 'ShippingLastName';   
+//    $mapping['delivery_street1'] = 'ShippingStreet';   
+//    $mapping['delivery_street2'] = 'ShippingStreet2';   
+//    $mapping['delivery_city'] = 'ShippingCity';   
+//    $mapping['delivery_zone'] = 'ShippingState';   
+//    $mapping['delivery_postal_code'] = 'ShippingPostalCode';   
+//    $mapping['delivery_country'] = 'ShippingCountry';   
+//    $mapping['billing_first_name'] = 'BillingFirstName';   
+//    $mapping['billing_last_name'] = 'BillingLastName';   
+//    $mapping['billing_street1'] = 'BillingStreet';   
+//    $mapping['billing_street2'] = 'BillingStreet2';   
+//    $mapping['billing_city'] = 'BillingCity';   
+//    $mapping['billing_zone'] = 'BillingState';   
+//    $mapping['billing_postal_code'] = 'BillingPostalCode';   
+//    $mapping['billing_country'] = 'BillingCountry';    
+//
+//    return $mapping;            
+//}
 
-function courier_ubercart_get_user_mapping()
-{
-    //define the default mapping, and check the settings to see if there is new mapping defined
-    $mapping = array();
-    $mapping['name'] = 'CustomerRecordName';            
-    $mapping['pass'] = 'Notes';            
-    $mapping['mail'] = 'Email';            
-    $mapping['status'] = '{1}';    
-
-    return $mapping;            
-}
-
-function courier_ubercart_get_user_order_mapping()
-{
-    //define the default mapping, and check the settings to see if there is new mapping defined
-    $mapping = array();
-    $mapping['delivery_first_name'] = 'ShippingFirstName';   
-    $mapping['delivery_last_name'] = 'ShippingLastName';   
-    $mapping['delivery_street1'] = 'ShippingStreet';   
-    $mapping['delivery_street2'] = 'ShippingStreet2';   
-    $mapping['delivery_city'] = 'ShippingCity';   
-    $mapping['delivery_zone'] = 'ShippingState';   
-    $mapping['delivery_postal_code'] = 'ShippingPostalCode';   
-    $mapping['delivery_country'] = 'ShippingCountry';   
-    $mapping['billing_first_name'] = 'BillingFirstName';   
-    $mapping['billing_last_name'] = 'BillingLastName';   
-    $mapping['billing_street1'] = 'BillingStreet';   
-    $mapping['billing_street2'] = 'BillingStreet2';   
-    $mapping['billing_city'] = 'BillingCity';   
-    $mapping['billing_zone'] = 'BillingState';   
-    $mapping['billing_postal_code'] = 'BillingPostalCode';   
-    $mapping['billing_country'] = 'BillingCountry';    
-
-    return $mapping;            
-}
-
-function courier_quickbooks_pos_process_user($objectType, $responseXml)
-{
+function courier_connector_commerce_process_user($responseXml)
+{    
     //write the error to some log if there was one
     if($responseXml->ErrorMessage != '')
     {
         //handle error
     }
     
+    $objectType = (string) $responseXml->getName();
+
+    //remove the _Response
+    $objectType = str_replace('_Response', '', $objectType);
+    
     $plural = $objectType . 's';
     $id = $objectType . 'ID';
+    
+    $field_config_data = db_query("select field_config_instance.field_name, field_config.type,
+          field_config.module from field_config_instance inner join field_config on field_config.id = field_config_instance.field_id
+          where field_config_instance.bundle = 'billing' and field_config_instance.entity_type = 'commerce_customer_profile'")->fetchAllAssoc("field_name");
+
     
     foreach($responseXml->$plural->$objectType as $user)
     {          
@@ -84,9 +94,9 @@ function courier_quickbooks_pos_process_user($objectType, $responseXml)
             $usr->language = LANGUAGE_NONE; 
             
             //set the quickbooks related id
-            if($user->$id != '')
+            if(isset($user->$id))
             {
-                $usr->field_quickbooks_id[$usr->language][0]['value'] = $user->$id;                           
+                $usr->field_quickbooks_id[$usr->language][0]['value'] = (string)$user->$id;                           
                 //$edit['field_quickbooks_id'][$user->language][0]['value'] = $user->$id;
             }   
 
@@ -167,8 +177,35 @@ function courier_quickbooks_pos_process_user($objectType, $responseXml)
 
                 //load data based on the mapping
                 //$mapping = courier_ubercart_get_user_mapping();
-                $mapping = db_query("select * from {courier_customer_mapping}");
+                //$mapping = db_query("select * from {courier_customer_mapping}");
 
+                foreach ($field_config_data as $field => $value)
+                {
+                  //this is the stock field that is more of a place holder, these fields dont change
+                  if($field == "commerce_customer_address") {
+                    $new_field_value = courier_connector_map_value($objectType . "_response", "commerce_customer_address_country", $user);
+                    $edit->$field = courier_connector_process_field($new_field_value, "commerce_customer_address_country", $value->type);
+                    
+//                      "commerce_customer_address_country"
+//                      "commerce_customer_address_administrative_area"
+//                      "commerce_customer_address_sub_administrative_area"
+//                      "commerce_customer_address_locality"
+//                      "commerce_customer_address_dependent_locality"
+//                      "commerce_customer_address_postal_code"
+//                      "commerce_customer_address_thoroughfare"
+//                      "commerce_customer_address_premise"
+//                      "commerce_customer_address_sub_premise"
+//                      "commerce_customer_address_organisation_name"
+//                      "commerce_customer_address_name_line"
+//                      "commerce_customer_address_first_name"
+//                      "commerce_customer_address_last_name"
+                  }
+                  else {
+                    $new_field_value = courier_connector_map_value($objectType . "_response", $field, $user);
+                    $edit->$field = courier_connector_process_field($new_field_value, $field, $value->type);
+                  }
+                }
+                
                 //get some value from the database
                 //be sure to pass the object type value in, so can use mapping based on type from qb
 
@@ -177,29 +214,29 @@ function courier_quickbooks_pos_process_user($objectType, $responseXml)
                 //if it is empty
                 //use the default
 
-                foreach ($mapping as $mapping)
-                {
-                    if($map->qb_field != "Not_Mapped")
-                    {
-                        if($map->qb_field == "Custom")
-                        {                   
-                            $customer->$map->uc_field = (string) $user->$map->custom_value;
-                            $edit[$map->uc_field] = (string) $user->$map->custom_value;
-                        }
-                        else
-                        {
-                           $customer->$map->uc_field = (string) $user->$map->qb_field;
-                            $edit[$map->uc_field] = (string) $user->$map->qb_field;                          
-                        }
-                    }
-                }
-
-                //set the quickbooks related id
-                if($user->$id != '')
-                {
-                    $customer->field_quickbooks_id[$customer->language][0]['value'] = $user->$id;      
-                    $edit['field_quickbooks_id'][$customer->language][0]['value'] = $user->$id;
-                }                           
+//                foreach ($mapping as $mapping)
+//                {
+//                    if($map->qb_field != "Not_Mapped")
+//                    {
+//                        if($map->qb_field == "Custom")
+//                        {                   
+//                            $customer->$map->uc_field = (string) $user->$map->custom_value;
+//                            $edit[$map->uc_field] = (string) $user->$map->custom_value;
+//                        }
+//                        else
+//                        {
+//                           $customer->$map->uc_field = (string) $user->$map->qb_field;
+//                            $edit[$map->uc_field] = (string) $user->$map->qb_field;                          
+//                        }
+//                    }
+//                }
+//
+//                //set the quickbooks related id
+//                if($user->$id != '')
+//                {
+//                    $customer->field_quickbooks_id[$customer->language][0]['value'] = $user->$id;      
+//                    $edit['field_quickbooks_id'][$customer->language][0]['value'] = $user->$id;
+//                }                           
 
                 user_save($customer, $edit);                      
             }

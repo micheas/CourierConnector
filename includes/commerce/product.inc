@@ -1,8 +1,13 @@
 <?php
 
-function courier_quickbooks_pos_process_product($objectType, $responseXml)
+function courier_connector_commerce_process_product($responseXml)
 {
   require_once 'field_processor.inc';
+  
+  $objectType = (string) $responseXml->getName();
+
+  //remove the _Response
+  $objectType = str_replace('_Response', '', $objectType);
   
   //should be set somewhere else
   $product_type = "product";
@@ -140,7 +145,7 @@ function courier_quickbooks_pos_process_product($objectType, $responseXml)
                      ->execute();
                 }
              }
-             else if($sku_field = courier_quickbooks_pos_map_value("product_response", "sku", $quickbooks_item_record))
+             else if($sku_field = courier_connector_map_value($objectType . "_response", "sku", $quickbooks_item_record))
              {                   
                //try and do an auto relation base on the sku value
 
@@ -179,13 +184,16 @@ function courier_quickbooks_pos_process_product($objectType, $responseXml)
 
              foreach ($field_config_data as $field => $value)
              {                    
-               $new_field_value = courier_quickbooks_pos_map_value("product_response", $field, $quickbooks_item_record);
+               $new_field_value = courier_connector_map_value($objectType . "_response", $field, $quickbooks_item_record);
                
-               $commerce_product_record->$field = courier_quickbooks_pos_process_field($new_field_value, $field, $value->type);
+               $commerce_product_record->$field = courier_connector_process_field($new_field_value, $field, $value->type);
              }
              
-             //set the sku this is not field either
-             $sku_value = courier_quickbooks_pos_map_value("product_response", "sku", $quickbooks_item_record);               
+             //These values are ever present so not found in the field config             
+             $title_value = courier_connector_map_value($objectType . "_response", "title", $quickbooks_item_record);               
+             $commerce_product_record->title = $title_value;
+             
+             $sku_value = courier_connector_map_value($objectType . "_response", "sku", $quickbooks_item_record);               
              $commerce_product_record->sku = $sku_value;
                          
              //set the quickbooks related id
@@ -205,102 +213,3 @@ function courier_quickbooks_pos_process_product($objectType, $responseXml)
      }
   }
 }
-
-//generates a request xml for sending down orders or asking for a particular order or filter
-//objectType - The request type, valid: InventoryItem, NonInventoryItem, ServiceItem, DiscountItem
-//args - array of the query arguments, refer to xml documents for valid list, the default will give all records
-//itemIDs - array of the ids of the products that you whish to push down 
-function courier_ubercart_request_product($objectType, $args = array("FromModifiedDate" => "1-1-1990"), $itemIDs = array())
-{
-    $item_mapping = courier_ubercart_get_product_mapping();
-   
-    $items = array();
-    
-    //get the orders that are defined in the orderIDs list
-    if(count($itemIDs) > 0)
-    {
-        foreach($itemIDs as $itemid)
-        {
-            $items[] = node_load($itemid);
-        }
-    }
-    
-    //build the request    
-    $doc = new SimpleXMLElement('<' . $objectType . "_Request" . ' />');
-           
-    //add the query args
-    foreach($args as $arg_name => $arg)        
-    {
-        //some of the arguments are arrays
-        if(is_array($arg))
-        {
-            //add the element
-            $list = $doc->addChild($arg_name);
-            
-            //the key is plural, need to drop the s to make the singular for each record
-            $arg_single = substr_replace($arg_name ,"",-1);
-            
-            foreach($arg as $a)
-            {
-                $list->addChild($arg_single, $a);
-            }
-            
-            $doc->addChild($list);
-        }
-        else
-        {
-            $doc->addChild($arg_name, $arg);
-        }
-    }
-    
-    if(count($items) > 0)
-    {
-        //add the object we are pushing down
-        $objects = $doc->addChild($objectType . "s");
-    
-        //loop through each of the orders
-        foreach($items as $itm)
-        {
-            $object = $objects->addChild($objectType);
-            
-            //add the keys that are mapped from the order item to the xml
-            foreach($item_mapping as $uc_key => $field)
-            {
-                if($field != '')
-                {
-                    //make sure the value is not a default value                                
-                    if(preg_match('/^{.*?}$/', $field) == 0)
-                    {                         
-                        if($uc_key == "body")
-                        {
-                            //this is a special case, have to handle diferently
-                            $object->addChild($field, $itm->body['und'][0]['value']);
-                        }
-                        else if(isset($itm->$uc_key))     
-                        {
-                            $object->addChild($field, (string) $itm->$uc_key);
-                        }
-                    }
-                }
-            }     
-            
-            //add the related id data, these are not mappable so wouldnt appear in that list
-            $object->addChild("RelatedID", $itm->nid);                       
-                        
-            //add the quickbooks related values
-            $qb_itemid = db_query("select field_quickbooks_id_value from {field_data_field_quickbooks_id} where bundle = 'product' and entity_id = :v", array(":v" => $itm->nid))->fetchField();
-            
-            if($qb_itemid != '')
-                $object->addChild($objectType . "ID", $qb_itemid);                     
-        }
-    }
-    
-    //write the request to the request table
-    db_insert('courier_requests') // Table name no longer needs {}
-            ->fields(array(
-              'request_xml' => trim(str_replace('<?xml version="1.0"?>', '', $doc->asXML()))
-            ))
-            ->execute();
-}
-
-?>
