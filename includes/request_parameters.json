@@ -4,8 +4,21 @@
             {
                 "method": "commerce_product_load",
                 "object_id": "id",
+                "table": "commerce_product",
+                "cart_id": "product_id",
                 "foreign_id": {
                     "InventoryItemID": "field_quickbooks_id:und:0:value"
+                }
+            }
+        ],
+        "ItemInventory": [
+            {
+                "method": "commerce_product_load",
+                "object_id": "id",
+                "table": "commerce_product",
+                "cart_id": "product_id",
+                "foreign_id": {
+                    "ItemInventoryID": "field_quickbooks_id:und:0:value"
                 }
             }
         ],
@@ -13,6 +26,8 @@
             {
                 "method": "commerce_product_load",
                 "object_id": "id",
+                "table": "commerce_product",
+                "cart_id": "product_id",
                 "foreign_id": {
                     "NonInventoryItemID": "field_quickbooks_id:und:0:value"
                 }
@@ -22,6 +37,8 @@
             {
                 "method": "commerce_customer_profile_load",
                 "object_id": "id",
+                "table": "users",
+                "cart_id": "user_id",
                 "foreign_id": {
                     "CustomerID": "field_quickbooks_id:und:0:value"
                 }
@@ -35,6 +52,8 @@
             {
                 "method": "",
                 "object_id": "id",
+                "table": "commerce_order",
+                "cart_id": "order_id",
                 "foreign_id": {
                     "SalesReceiptID": "field_quickbooks_id:und:0:value"
                 }
@@ -44,6 +63,8 @@
             {
                 "method": "",
                 "object_id": "id",
+                "table": "commerce_order",
+                "cart_id": "order_id",
                 "foreign_id": {
                     "InvoiceID": "field_quickbooks_id:und:0:value"
                 }
@@ -53,6 +74,8 @@
             {
                 "method": "commerce_order_load",
                 "object_id": "id",
+                "table": "commerce_order",
+                "cart_id": "order_id",
                 "foreign_id": {
                     "SalesOrderID": "field_quickbooks_id:und:0:value"
                 },                
@@ -81,6 +104,8 @@
             {
                 "method": "commerce_line_item_load",
                 "object_id": "id",
+                "table": "commerce_line_item",
+                "cart_id": "line_item_id",
                 "foreign_id": {
                     "SalesOrderItemID": "field_quickbooks_id:und:0:value"
                 },
@@ -103,8 +128,25 @@
             {
                 "method": "node_load",
                 "object_id": "id",
+                "table": "uc_product",
+                "cart_id": "nid",
                 "foreign_id": {
                     "InventoryItemID": "field_quickbooks_id:und:0:value"
+                }
+            },
+            {
+                "method": "uc_product_load",
+                "object_id": "object"
+            }
+        ],
+        "ItemInventory": [
+            {
+                "method": "node_load",
+                "object_id": "id",
+                "table": "uc_product",
+                "cart_id": "nid",
+                "foreign_id": {
+                    "ItemInventoryID": "field_quickbooks_id:und:0:value"
                 }
             },
             {
@@ -116,6 +158,8 @@
             {
                 "method": "",
                 "object_id": "id",
+                "table": "users",
+                "cart_id": "user_id",
                 "foreign_id": {
                     "CustomerID": "field_quickbooks_id:und:0:value"
                 }
@@ -125,6 +169,8 @@
             {
                 "method": "",
                 "object_id": "id",
+                "table": "uc_order",
+                "cart_id": "order_id",
                 "foreign_id": {
                     "SalesReceiptID": "field_quickbooks_id:und:0:value"
                 }
@@ -134,6 +180,8 @@
             {
                 "method": "",
                 "object_id": "id",
+                "table": "uc_order",
+                "cart_id": "order_id",
                 "foreign_id": {
                     "InvoiceID": "field_quickbooks_id:und:0:value"
                 }
@@ -143,6 +191,8 @@
             {
                 "method": "",
                 "object_id": "id",
+                "table": "uc_order",
+                "cart_id": "order_id",
                 "foreign_id": {
                     "SalesOrderID": "field_quickbooks_id:und:0:value"
                 }

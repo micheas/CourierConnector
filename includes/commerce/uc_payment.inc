@@ -70,7 +70,7 @@ function courier_ubercart_process_payment($objectType, $responseXml)
             //set the quickbooks related id
             if($payment->$id != '')
             {
-                $uc_payment->field_quickbooks_id[$uc_payment->language][0]['value'] = $payment->$id;                           
+                $uc_payment->field_quickbooks_id['und'][0]['value'] =(string) $payment->$id;                           
             }
             
            

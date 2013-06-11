@@ -411,6 +411,14 @@ function theme_courier_connector_request_table($variables)
 
 function courier_connector_queue_form_submit(&$form_state) 
 {   
+    db_insert('courier_requests') 
+              ->fields(array(
+                'request_type' => 'add',
+                'request_method' => 'ItemInventory',
+                'request_data' => serialize(array("ItemInventoryIDs"=>array("all"))) 
+              ))
+              ->execute();
+  
     switch($form_state_state['values']['courier-requests__active_tab'])
     {
         case "edit-submit-read-request":

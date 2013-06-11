@@ -37,7 +37,6 @@ function courier_connector_commerce_process_product($responseXml)
      if($quickbooks_item_record->Processed == "error") 
      {
          //was already logged
-
      }
      else if($quickbooks_item_record->Processed == "added") 
      {
@@ -46,34 +45,30 @@ function courier_connector_commerce_process_product($responseXml)
          //update the record locally to attach the qb id from this add
 
          //try and find a node that has this quickbooks id            
-         $itemid = db_query("select entity_id from {field_data_field_quickbooks_id} where bundle = 'product' and field_quickbooks_id_value = :v", array(":v" => $quickbooks_item_record->$id))->fetchField();
+         $entity_id = db_query("select entity_id from {field_data_field_quickbooks_id} where entity_type = 'commerce_product' and field_quickbooks_id_value = :v", array(":v" => (string) $quickbooks_item_record->ItemInventoryID))->fetchField();                
 
          //check if there is a hard node realtion
          if($quickbooks_item_record->RelatedID && $quickbooks_item_record->RelatedID != '')
          {
-             $node = node_load((string)$quickbooks_item_record->RelatedID);
+           $commerce_product_record = commerce_product_load($quickbooks_item_record->RelatedID);   
          }         
-         else if($nid != '')
+         else if($entity_id !== false)
          {
-             //load from the quickbooks related id
-             $node = node_load($nid);
+           $commerce_product_record = commerce_product_load($entity_id);            
          }
 
-         $node->language = LANGUAGE_NONE;
+         //set the quickbooks related id//      
+          if($quickbooks_item_record->ItemInventoryID != '') {
+            $commerce_product_record->field_quickbooks_id['und'][0]['value'] = (string) $quickbooks_item_record->ItemInventoryID;                           
+          }     
 
-         //set the quickbooks related id
-         if($quickbooks_item_record->$id != '')
-         {
-             $node->field_quickbooks_id[$itm->language][0]['value'] = $quickbooks_item_record->$id;                           
-         }   
-
-         node_save($node);
+          $result = commerce_product_save($commerce_product_record);
 
          //log the add            
          db_insert('courier_transaction_log') 
              ->fields(array(
                'type' => 1,
-               'message' => "Product Sent to QuickBooks, Product ID: " . $node->nid,
+               'message' => "Product Sent to QuickBooks, Product ID: " . $entity_id,
                'status' => "OK"
              ))
              ->execute();
@@ -110,7 +105,7 @@ function courier_connector_commerce_process_product($responseXml)
              $entity_id = db_query("select entity_id from {field_data_field_quickbooks_id} where entity_type = 'commerce_product' and field_quickbooks_id_value = :v", array(":v" => (string) $quickbooks_item_record->ItemInventoryID))->fetchField();                
 
              if(isset($quickbooks_item_record->RelatedID) && trim((string)$quickbooks_item_record->RelatedID) != '') {              
-              $commerce_product_record = commerce_product_load($quickbooks_item_record->RelatedID);            
+               $commerce_product_record = commerce_product_load($quickbooks_item_record->RelatedID);            
 
               if(!$commerce_product_record){
                 //log an error

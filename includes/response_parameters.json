@@ -20,6 +20,10 @@
             "file": "commerce/product.inc",
             "method": "courier_connector_commerce_process_product"
         },
+        "ItemInventory": {
+            "file": "commerce/product.inc",
+            "method": "courier_connector_commerce_process_product"
+        },
         "NonInventoryItem": {
             "file": "commerce/product.inc",
             "method": "courier_connector_commerce_process_product"
@@ -43,6 +47,10 @@
             "method": "courier_connector_ubercart_process_user"
         },
         "InventoryItem": {
+            "file": "ubercart/product.inc",
+            "method": "courier_connector_ubercart_process_product"
+        },
+        "ItemInventory": {
             "file": "ubercart/product.inc",
             "method": "courier_connector_ubercart_process_product"
         },

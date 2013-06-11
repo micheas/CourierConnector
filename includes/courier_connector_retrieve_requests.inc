@@ -125,22 +125,49 @@ function courier_connector_process_request($job_id, $object_type, $parameters, $
         $record = array();
         $object_record = array();
         $reference_object = array();
-        
+                        
         //foreach($parameters as $parameter_type) {          
           //foreach($parameter_type as $parameter) {          
-        foreach($parameters[$object_type] as $parameter) {          
-            if($parameter['object_id'] == 'id') {            
-              $object_record = $parameter['method']($object_id);
-              $reference_object = $object_record; //a copy of the original object for reference
+        foreach($parameters[$object_type] as $parameter) {                         
+          
+          //if the requested id is all of them, we will need to do some recursion
+          if($object_id == "all") {
+
+            $object_ids = array();
+            
+            //get a list of all of the objects
+            if(courier_connector_get_drupal_version() == '6') {
+              //TODO
+              //            $request_data = db_query("select job_id, job_date, request_type, request_method, request_data from courier_requests where job_id = %d order by job_date asc", $job_id['job_id']);           
+              //            $result = db_fetch_array($request_data);
             }
-            else if($parameter['object_id'] == 'object') {            
-              $object_record = $parameter['method']($object_record);                         
-            }
-            else {                        
-              $object_record = $parameter['method'](courier_connector_get_value($reference_object, $parameter['object_id']));
+            else {
+              $query = db_select($parameter['table']);
+              $query->fields($parameter['table'], array($parameter['cart_id']));                
+              $object_ids = $query->execute();  
             }
                         
-            $filter_passed = true;
+            foreach($object_ids as $i) {
+              $i = (array)$i;
+              
+              courier_connector_process_request($job_id, $object_type, $parameters, serialize(array($object_type . '_ids' => array($i[$parameter['cart_id']]))), $request_type, $requests_queued);                                         
+            }
+            
+            return null;
+          }
+          
+          if($parameter['object_id'] == 'id') {            
+            $object_record = $parameter['method']($object_id);
+            $reference_object = $object_record; //a copy of the original object for reference
+          }
+          else if($parameter['object_id'] == 'object') {            
+            $object_record = $parameter['method']($object_record);                         
+          }
+          else {                        
+            $object_record = $parameter['method'](courier_connector_get_value($reference_object, $parameter['object_id']));
+          }
+
+          $filter_passed = true;
 
             //check for field_filter these will exclude the record because of a field does not = the value
             //for excluding some things that are not what we are looking for
@@ -247,7 +274,13 @@ function courier_connector_process_request($job_id, $object_type, $parameters, $
     unset($data[$object_type . '_ids']);
     
     if(!$return_values)
-      $requests_queued[$object_type . "_Request"] = $data;    
+            
+      if(array_key_exists($object_type . "_Request", $requests_queued)) {
+        $requests_queued[$object_type . "_Request"][$object_type . "s"][] = $record;
+      }
+      else {
+        $requests_queued[$object_type . "_Request"] = $data;    
+      }
     else
       return $data;
   }
