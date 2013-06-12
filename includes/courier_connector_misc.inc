@@ -235,24 +235,7 @@ function get_courier_connector_services_resources() {
               'type' => 'int',
             ), 
       ),
-    ),
-    'update' => array(
-      'help' => 'Calls the processing of a pending response',      
-      'file' => array('type' => 'inc', 'module' => 'courier_connector_uber_7', 'name' => 'includes/courier_connector_process_responses'),      
-      'callback' => 'courier_connector_process_response',
-      'access callback' => 'courier_connector_access',
-      'access arguments' => array('view'),
-      'access arguments append' => TRUE,
-      'args' => array(   
-          array(
-               'name' => 'job_id',
-               'optional' => FALSE,
-               'source' => array('path' => '0'),
-               'description' => '',
-               'type' => 'int',
-             ), 
-      ),
-    ),  
+    ),   
     'create' => array(
       'help' => 'Create a response to a request',      
       'file' => array('type' => 'inc', 'module' => 'courier_connector_uber_7', 'name' => 'includes/courier_connector_create_responses'),      
