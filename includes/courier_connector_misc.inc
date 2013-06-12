@@ -124,16 +124,16 @@ function get_courier_menu() {
 //    'file' => 'includes/courier_connector_admin_mapping.inc',
 //  );
   
-  $items['admin/store/integration/command_queue'] = array(
-    'title' => 'Queue Command',
-    'description' => 'Queue commands to be processed by the integration.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('courier_connector_queue_form'),
-    'access arguments' => array('access administration pages'),
-    'type' => MENU_NORMAL_ITEM,
-    'weight' => 50,
-    'file' => 'includes/courier_connector_admin_queue.inc',
-  );
+//  $items['admin/store/integration/command_queue'] = array(
+//    'title' => 'Queue Command',
+//    'description' => 'Queue commands to be processed by the integration.',
+//    'page callback' => 'drupal_get_form',
+//    'page arguments' => array('courier_connector_queue_form'),
+//    'access arguments' => array('access administration pages'),
+//    'type' => MENU_NORMAL_ITEM,
+//    'weight' => 50,
+//    'file' => 'includes/courier_connector_admin_queue.inc',
+//  );
   
 //  $items['courier_connector/update'] = array(    
 //    'page callback' => 'courier_connector_courier_update', 
@@ -153,20 +153,18 @@ function get_courier_menu() {
 
 //custom rules exposed
 function get_courier_connector_rules_action_info() {
-  $actions['download_item'] = array(
-    'arguments' => array(          
-      'date_modified' => array(
-        'type' => 'date',
-        'label' => t('From Modified Date'),
-        'save' => true
-      ),
-    ),
-    'group' => t('QuickBooks'),     
-    'module' => t('QuickBooks'),
-    'label' => t('Download item(s) into Quickbooks'),    
-    'base' => 'courier_connector_download_items',  
-  );
-  
+//  $actions['add_item'] = array(
+//    'arguments' => array(          
+//      'item_ids' => array(
+//        'type' => 'text',
+//        'label' => t('Comma seperated list of Item ids to download'),
+//        'save' => true
+//      ),
+//    ),
+//    'label' => t('Download item(s) into Quickbooks'),    
+//    'base' => 'courier_connector_download_items',  
+//  );
+      
   $actions['read_items'] = array(
     'arguments' => array(          
       'date_modified' => array(
@@ -175,26 +173,46 @@ function get_courier_connector_rules_action_info() {
         'save' => true
       ),
     ),
-    'group' => t('QuickBooks'),     
-    'module' => t('QuickBooks'),
     'label' => t('Read item(s) from Quickbooks'),    
     'base' => 'courier_connector_read_items',  
   );
   
-  $actions['read_customers'] = array(
-    'arguments' => array(          
-      'date_modified' => array(
-        'type' => 'date',
-        'label' => t('From Modified Date'),
-        'save' => true
-      ),
-    ),
-    'group' => t('QuickBooks'),     
-    'module' => t('QuickBooks'),
-    'label' => t('Read customers from Quickbooks'),    
-    'base' => 'courier_connector_read_customers',  
-  );
-    
+//  $actions['read_customers'] = array(
+//    'arguments' => array(          
+//      'date_modified' => array(
+//        'type' => 'date',
+//        'label' => t('From Modified Date'),
+//        'save' => true
+//      ),
+//    ),
+//    'label' => t('Read customers from Quickbooks'),    
+//    'base' => 'courier_connector_read_customers',  
+//  );
+  
+   $actions['add_order'] = array(
+    'parameter' => array(
+       'order' => array(
+         'type' => 'commerce_order',
+         'label' => t('Order'),
+         'save' => TRUE,
+       ),       
+     ),    
+    'label' => t('Send order to Quickbooks'),    
+    'base' => 'courier_connector_download_order',  
+  );       
+  
+  if(courier_connector_get_drupal_version() == "6") {
+   // $actions['add_item']['module'] = "Courier Connector";
+    $actions['read_items']['module'] = "Courier Connector";
+  //  $actions['read_customers']['module'] = "Courier Connector";
+    $actions['add_order']['module'] = "Courier Connector";    
+  }
+  else {
+  //  $actions['add_item']['group'] = "Courier Connector";
+    $actions['read_items']['group'] = "Courier Connector";
+  //  $actions['read_customers']['group'] = "Courier Connector";
+    $actions['add_order']['group'] = "Courier Connector";
+  }   
   return $actions;
 }
 

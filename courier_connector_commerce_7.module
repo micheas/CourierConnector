@@ -8,20 +8,45 @@ function courier_connector_commerce_7_menu() {
 }
 
 //custom rules exposed
-function courier_connector_rules_action_info() {
+function courier_connector_commerce_7_rules_action_info() {
   return get_courier_connector_rules_action_info();
 }
 
-function courier_connector_commerce_7_read_items($from_date) {
+function courier_connector_read_items($from_date) {
+  $item_type = variable_get("courier_connector_item_type", "ItemInventory");
+          
+  $req = array();  
+   
+  db_insert('courier_requests') 
+              ->fields(array(
+                'request_type' => 'read',
+                'request_method' => $item_type,
+                'request_data' => serialize(array("TimeModified"=>"1/1/2001"))
+              ))
+              ->execute();
+}
+
+function courier_connector_read_customers($from_date) {
   
 }
 
-function courier_connector_commerce_7_read_customers($from_date) {
+function courier_connector_download_items($items) {
   
 }
 
-function courier_connector_commerce_7_download_items($from_date) {
+function courier_connector_download_order($order) {  
   
+  $order_type = variable_get("courier_connector_order_type", "SalesOrder");
+          
+  $req = array();  
+   
+  db_insert('courier_requests') 
+              ->fields(array(
+                'request_type' => 'add',
+                'request_method' => $order_type,
+                'request_data' => serialize(array($order_type . "_ids"=>array($order->order_id)))
+              ))
+              ->execute();
 }
 
 /**

@@ -415,7 +415,7 @@ function courier_connector_queue_form_submit(&$form_state)
               ->fields(array(
                 'request_type' => 'add',
                 'request_method' => 'ItemInventory',
-                'request_data' => serialize(array("ItemInventoryIDs"=>array("all"))) 
+                'request_data' => serialize(array("ItemInventory_ids"=>array("all"))) 
               ))
               ->execute();
   
