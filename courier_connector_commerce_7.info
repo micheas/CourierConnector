@@ -1,0 +1,14 @@
+name = "Courier Connector For Commerce"
+description = "Courier Connector Module For Commerce"
+core = 7.x
+
+dependencies[] = commerce
+dependencies[] = commerce_product
+dependencies[] = commerce_customer
+dependencies[] = commerce_order
+dependencies[] = services
+dependencies[] = rest_server
+
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "courier_connector"

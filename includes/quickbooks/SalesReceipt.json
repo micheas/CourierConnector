@@ -1,0 +1,130 @@
+{
+    "Fields": [
+        {
+            "Name": "SalesReceiptID"
+        },
+        {
+            "Name": "RelatedID"
+        },
+        {
+            "Name": "RelatedCustomerID"
+        },
+        {
+            "Name": "RelatedPaymentID"
+        },
+        {
+            "Name": "TransactionNumber"
+        },
+        {
+            "Name": "CustomerID"
+        },
+        {
+            "Name": "CustomerName"
+        },
+        {
+            "Name": "ClassName"
+        },
+        {
+            "Name": "TransactionDate"
+        },
+        {
+            "Name": "ReferenceNumber"
+        },
+        {
+            "Name": "BillingFirstName"
+        },
+        {
+            "Name": "BillingLastName"
+        },
+        {
+            "Name": "BillingStreet"
+        },
+        {
+            "Name": "BillingStreet2"
+        },
+        {
+            "Name": "BillingStreet3"
+        },
+        {
+            "Name": "BillingStreet4"
+        },
+        {
+            "Name": "BillingCity"
+        },
+        {
+            "Name": "BillingState"
+        },
+        {
+            "Name": "BillingPostalCode"
+        },
+        {
+            "Name": "BillingCountry"
+        },
+        {
+            "Name": "BillingAddressNotes"
+        },
+        {
+            "Name": "ShippingFirstName"
+        },
+        {
+            "Name": "ShippingLastName"
+        },
+        {
+            "Name": "ShippingStreet"
+        },
+        {
+            "Name": "ShippingStreet2"
+        },
+        {
+            "Name": "ShippingStreet3"
+        },
+        {
+            "Name": "ShippingStreet4"
+        },
+        {
+            "Name": "ShippingCity"
+        },
+        {
+            "Name": "ShippingState"
+        },
+        {
+            "Name": "ShippingPostalCode"
+        },
+        {
+            "Name": "ShippingCountry"
+        },
+        {
+            "Name": "ShippingAddressNotes"
+        },
+        {
+            "Name": "IsPending"
+        },
+        {
+            "Name": "CheckNumber"
+        },
+        {
+            "Name": "PaymentMethodName"
+        },
+        {
+            "Name": "ShipmentDate"
+        },
+        {
+            "Name": "ShippingMethodName"
+        },
+        {
+            "Name": "Fob"
+        },
+        {
+            "Name": "ItemSalesTaxID"
+        },
+        {
+            "Name": "ItemSalesTaxName"
+        },
+        {
+            "Name": "Memo"
+        },
+        {
+            "Name": "Other"
+        }
+    ]
+}

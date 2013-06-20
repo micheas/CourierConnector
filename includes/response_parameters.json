@@ -1,0 +1,62 @@
+{
+    "commerce": {
+        "SalesOrder": {
+            "file": "commerce/commerce_order.inc",
+            "method": "courier_connector_commerce_process_order"
+        },
+        "Invoice": {
+            "file": "commerce/commerce_order.inc",
+            "method": "courier_connector_commerce_process_order"
+        },
+        "SalesReceipt": {
+            "file": "commerce/commerce_order.inc",
+            "method": "courier_connector_commerce_process_order"
+        },
+        "Customer": {
+            "file": "commerce/user.inc",
+            "method": "courier_connector_commerce_process_user"
+        },
+        "InventoryItem": {
+            "file": "commerce/product.inc",
+            "method": "courier_connector_commerce_process_product"
+        },
+        "ItemInventory": {
+            "file": "commerce/product.inc",
+            "method": "courier_connector_commerce_process_product"
+        },
+        "NonInventoryItem": {
+            "file": "commerce/product.inc",
+            "method": "courier_connector_commerce_process_product"
+        }
+    },
+    "ubercart": {
+        "SalesOrder": {
+            "file": "ubercart/uc_order.inc",
+            "method": "courier_connector_ubercart_process_order"
+        },
+        "Invoice": {
+            "file": "ubercart/uc_order.inc",
+            "method": "courier_connector_ubercart_process_order"
+        },
+        "SalesReceipt": {
+            "file": "ubercart/uc_order.inc",
+            "method": "courier_connector_ubercart_process_order"
+        },
+        "Customer": {
+            "file": "ubercart/user.inc",
+            "method": "courier_connector_ubercart_process_user"
+        },
+        "InventoryItem": {
+            "file": "ubercart/product.inc",
+            "method": "courier_connector_ubercart_process_product"
+        },
+        "ItemInventory": {
+            "file": "ubercart/product.inc",
+            "method": "courier_connector_ubercart_process_product"
+        },
+        "NonInventoryItem": {
+            "file": "ubercart/product.inc",
+            "method": "courier_connector_ubercart_process_product"
+        }
+    }
+}

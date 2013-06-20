@@ -1,0 +1,202 @@
+{
+    "commerce": {
+        "InventoryItem": [
+            {
+                "method": "commerce_product_load",
+                "object_id": "id",
+                "table": "commerce_product",
+                "cart_id": "product_id",
+                "foreign_id": {
+                    "InventoryItemID": "field_quickbooks_id:und:0:value"
+                }
+            }
+        ],
+        "ItemInventory": [
+            {
+                "method": "commerce_product_load",
+                "object_id": "id",
+                "table": "commerce_product",
+                "cart_id": "product_id",
+                "foreign_id": {
+                    "ItemInventoryID": "field_quickbooks_id:und:0:value"
+                }
+            }
+        ],
+        "NonInventoryItem": [
+            {
+                "method": "commerce_product_load",
+                "object_id": "id",
+                "table": "commerce_product",
+                "cart_id": "product_id",
+                "foreign_id": {
+                    "NonInventoryItemID": "field_quickbooks_id:und:0:value"
+                }
+            }
+        ],
+        "Customer": [
+            {
+                "method": "commerce_customer_profile_load",
+                "object_id": "id",
+                "table": "users",
+                "cart_id": "user_id",
+                "foreign_id": {
+                    "CustomerID": "field_quickbooks_id:und:0:value"
+                }
+            },
+            {
+                "method": "user_load",
+                "object_id": "uid"
+            }
+        ],
+        "SalesReceipt": [
+            {
+                "method": "",
+                "object_id": "id",
+                "table": "commerce_order",
+                "cart_id": "order_id",
+                "foreign_id": {
+                    "SalesReceiptID": "field_quickbooks_id:und:0:value"
+                }
+            }
+        ],
+        "Invoice": [
+            {
+                "method": "",
+                "object_id": "id",
+                "table": "commerce_order",
+                "cart_id": "order_id",
+                "foreign_id": {
+                    "InvoiceID": "field_quickbooks_id:und:0:value"
+                }
+            }
+        ],
+        "SalesOrder": [
+            {
+                "method": "commerce_order_load",
+                "object_id": "id",
+                "table": "commerce_order",
+                "cart_id": "order_id",
+                "foreign_id": {
+                    "SalesOrderID": "field_quickbooks_id:und:0:value"
+                },                
+                "sub_methods": {
+                    "Customer": "commerce_customer_billing:und:0:profile_id"
+                },
+                "sub_arrays": {
+                    "SalesOrderItem": {
+                        "sub_array_key": "commerce_line_items:und",
+                        "sub_id": "line_item_id"
+                    }
+                }
+            },
+            {
+                "method": "commerce_customer_profile_load",
+                "object_id": "commerce_customer_billing:und:0:profile_id",
+                "mapping_filter": "Billing"
+            },
+            {
+                "method": "commerce_customer_profile_load",
+                "object_id": "commerce_customer_shipping:und:0:profile_id",
+                "mapping_filter": "Shipping"
+            }
+        ],
+        "SalesOrderItem": [
+            {
+                "method": "commerce_line_item_load",
+                "object_id": "id",
+                "table": "commerce_line_item",
+                "cart_id": "line_item_id",
+                "foreign_id": {
+                    "SalesOrderItemID": "field_quickbooks_id:und:0:value"
+                },
+                "foreign_relation": {
+                  "object_type":"InventoryItem",
+                  "object_id": "commerce_product:und:0:product_id"
+                },
+                "field_filter": {
+                    "type": "product"
+                }
+            },
+            {
+                "method": "commerce_product_load",
+                "object_id": "commerce_product:und:0:product_id"
+            }
+        ]
+    },
+    "ubercart": {
+        "InventoryItem": [
+            {
+                "method": "node_load",
+                "object_id": "id",
+                "table": "uc_product",
+                "cart_id": "nid",
+                "foreign_id": {
+                    "InventoryItemID": "field_quickbooks_id:und:0:value"
+                }
+            },
+            {
+                "method": "uc_product_load",
+                "object_id": "object"
+            }
+        ],
+        "ItemInventory": [
+            {
+                "method": "node_load",
+                "object_id": "id",
+                "table": "uc_product",
+                "cart_id": "nid",
+                "foreign_id": {
+                    "ItemInventoryID": "field_quickbooks_id:und:0:value"
+                }
+            },
+            {
+                "method": "uc_product_load",
+                "object_id": "object"
+            }
+        ],
+        "Customer": [
+            {
+                "method": "",
+                "object_id": "id",
+                "table": "users",
+                "cart_id": "user_id",
+                "foreign_id": {
+                    "CustomerID": "field_quickbooks_id:und:0:value"
+                }
+            }
+        ],
+        "SalesReceipt": [
+            {
+                "method": "",
+                "object_id": "id",
+                "table": "uc_order",
+                "cart_id": "order_id",
+                "foreign_id": {
+                    "SalesReceiptID": "field_quickbooks_id:und:0:value"
+                }
+            }
+        ],
+        "Invoice": [
+            {
+                "method": "",
+                "object_id": "id",
+                "table": "uc_order",
+                "cart_id": "order_id",
+                "foreign_id": {
+                    "InvoiceID": "field_quickbooks_id:und:0:value"
+                }
+            }
+        ],
+        "SalesOrder": [
+            {
+                "method": "",
+                "object_id": "id",
+                "table": "uc_order",
+                "cart_id": "order_id",
+                "foreign_id": {
+                    "SalesOrderID": "field_quickbooks_id:und:0:value"
+                }
+            }
+        ]
+    }
+}
