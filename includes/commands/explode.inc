@@ -11,4 +11,3 @@ function courier_connector_command_explode($value, $field_name, $parameters) {
   
   return $new_value;
 }
-?>
