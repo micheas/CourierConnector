@@ -84,3 +84,4 @@ function courier_ubercart_process_payment($objectType, $responseXml)
     }
 }
 
+?>

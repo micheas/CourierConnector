@@ -5,4 +5,4 @@ function courier_connector_command_divide($value, $field_name, $parameters, $rec
   return $new_value;
 }
 
-
+?>

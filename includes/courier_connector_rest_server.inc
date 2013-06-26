@@ -19,7 +19,7 @@ class CourierXMLResponseParser extends RESTServer {
   }
   
 }
-//*
+
 class RESTServerViewCourier extends RESTServerView {
   public function render() {
     $doc = new DOMDocument('1.0', 'utf-8');
@@ -85,4 +85,3 @@ class RESTServerViewCourier extends RESTServerView {
     }
   }
 }
-//*/

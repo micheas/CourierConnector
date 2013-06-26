@@ -6,4 +6,4 @@ function courier_connector_command_date($value, $field_name, $parameters, $recor
   
   return $new_value;
 }
-
+?>
