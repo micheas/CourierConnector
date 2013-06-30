@@ -38,7 +38,7 @@ function courier_connector_process_field($value, $field_name, $field_type) {
       break;
 
     case 'number':
-      $return_field[LANGUAGE_NONE][0]['value'] = $v;
+      $return_field[LANGUAGE_NONE][0]['value'] = $value;
       break;
 
     case 'commerce_price':
