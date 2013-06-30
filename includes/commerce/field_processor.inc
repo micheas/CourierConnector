@@ -35,6 +35,7 @@ function courier_connector_process_field($value, $field_name, $field_type) {
     case 'taxonomy_term_reference':
 
       $vocabulary = courier_connector_get_vocabulary($field_name);
+      watchdog('Quickbooks import', print_r($vocabulary, TRUE),WATCHDOG_INFO);
       $vid = $vocabulary['vid'];
       $machine_name = $vocabulary['machine_name'];
       $term = taxonomy_get_term_by_name($value, $machine_name);
