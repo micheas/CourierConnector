@@ -41,6 +41,10 @@ function courier_connector_process_field($value, $field_name, $field_type) {
       $return_field[LANGUAGE_NONE][0]['value'] = $value;
       break;
 
+    case 'number_decimal':
+      $return_field[LANGUAGE_NONE][0]['value'] = $value;
+      break;
+
     case 'commerce_price':
       $return_field[LANGUAGE_NONE][0]['amount'] = ($value * 100);
       $return_field[LANGUAGE_NONE][0]['currency_code'] = 'USD';
