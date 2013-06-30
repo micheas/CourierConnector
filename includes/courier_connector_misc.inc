@@ -335,18 +335,18 @@ function get_courier_connector_permission() {
 /**
  * Access callback for the get requests resource.
  *
- * @param string $op
+ * @param string $operation
  *  The operation that's going to be performed.
  * @param array $args
  *  The arguments that will be passed to the callback.
  * @return bool
  *  Whether access is given or not.
  */
-function courier_connector_access($op, $args) {
+function courier_connector_access($operation, $args) {
   global $user;
   $access = TRUE;
 
-  switch ($op) {
+  switch ($operation) {
     case 'view':
       $access = user_access('get courier connector requests');
       break;
@@ -354,7 +354,7 @@ function courier_connector_access($op, $args) {
       $access = user_access('create courier connector responses');
       break;
   }
-  $access = TRUE;
+  $access = TRUE;  // TODO: figure out if this can be removed.
   return $access;
 }
 
@@ -430,12 +430,25 @@ function get_courier_connector_theme($existing, $type, $theme, $path) {
   return $theme_hooks;
 }
 
-function courier_connector_get_drupal_version() {
-  preg_match("/(.*?)\.../", VERSION, $matches);
-
-  if (is_array($matches)) {
-    return $matches[1];
+function courier_connector_get_vocabulary($field_name) {
+  $vocabulary = array();
+  static $_vocabulary_by_name;
+  if (!is_array($_vocabulary_by_name)) {
+    $_vocabulary_by_name = taxonomy_vocabulary_get_names();
   }
+  if (empty($_vocabulary_by_name)) {
+    return $vocabulary;
+  }
+  $fi = field_info_field($field_name);
+  foreach($fi['settings']['allowed_values'] as $voc) {
+    if ($voc['vocabulary'] && $_vocabulary_by_name[$voc['vocabulary']]) {
+      $vocabulary['machine_name'] = $_vocabulary_by_name[$voc['vocabulary']]->machine_name;
+      $vocabulary['vid'] = $_vocabulary_by_name[$voc['vocabulary']]->vid;
+    }
+  }
+  return $vocabulary;
+}
 
-  return 6;
+function courier_connector_get_drupal_version() {
+  return 7;
 }

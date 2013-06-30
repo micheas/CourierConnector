@@ -26,15 +26,33 @@ function courier_connector_process_field($value, $field_name, $field_type) {
       $return_field[LANGUAGE_NONE][0]['value'] = $value;
       $return_field[LANGUAGE_NONE][0]['format'] = 'full_html';
       $return_field[LANGUAGE_NONE][0]['safe_value'] = $value;
-      $return_field[LANGUAGE_NONE][0]['summary'] = substr($value, 0, 500);
       break;
 
     case 'list':
 
       break;
 
-    case 'taxonomy':
+    case 'taxonomy_term_reference':
 
+      $vocabulary = courier_connector_get_vocabulary($field_name);
+      $vid = $vocabulary['vid'];
+      $machine_name = $vocabulary['machine_name'];
+      $term = taxonomy_get_term_by_name($value, $machine_name);
+
+      if (count($term) === 0) {
+        $term = new stdClass();
+        $term->name = $value;
+        $term->vid = $vid;
+        taxonomy_term_save($term);
+        $value = $term->tid;
+      }
+      else {
+        foreach ($term as $tid) {
+          $value = $tid->tid;
+        }
+      }
+
+      $return_field[LANGUAGE_NONE][0]['tid'] = $value;
       break;
 
     case 'number':
