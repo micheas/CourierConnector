@@ -40,6 +40,9 @@ class RESTServerViewCourier extends RESTServerView {
       $assoc = FALSE || empty($data);
       $k = '';
       if (array_key_exists('key', $data)) {
+        if(!isset($value)){
+          $value = '';
+        }
         $k = $value;
         $k = preg_replace('/[^A-Za-z0-9_]/', '_', $k);
         $k = preg_replace('/^([0-9]+)/', '_$1', $k);
