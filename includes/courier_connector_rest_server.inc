@@ -8,11 +8,9 @@ class CourierXMLResponseParser extends RESTServer {
 
     // if $xml_data is Null then we expect errors
     if (!$xml) {
-      // build an error message string
-      $message = '';
+      $error_message = t('NULL returned.');
 
-      // throw an error
-      services_error($message, 406);
+      services_error($error_message, 406);
     }
 
     return $xml;
