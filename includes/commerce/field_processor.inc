@@ -38,18 +38,23 @@ function courier_connector_process_field($value, $field_name, $field_type) {
       watchdog('Quickbooks import', print_r($vocabulary, TRUE) . '$value = ' . $value, array(), WATCHDOG_INFO);
       $vid = $vocabulary['vid'];
       $machine_name = $vocabulary['machine_name'];
-      $term = taxonomy_get_term_by_name($value, $machine_name);
-
-      if (count($term) === 0) {
-        $term = new stdClass();
-        $term->name = $value;
-        $term->vid = $vid;
-        taxonomy_term_save($term);
-        $value = $term->tid;
+      if ($machine_name == 'department') {
+        db_query('select tid from courier_department_cache where qb_id = :qbid', array(':qbid' => trim($value)));
       }
       else {
-        foreach ($term as $tid) {
-          $value = $tid->tid;
+        $term = taxonomy_get_term_by_name($value, $machine_name);
+
+        if (count($term) === 0) {
+          $term = new stdClass();
+          $term->name = $value;
+          $term->vid = $vid;
+          taxonomy_term_save($term);
+          $value = $term->tid;
+        }
+        else {
+          foreach ($term as $tid) {
+            $value = $tid->tid;
+          }
         }
       }
 
