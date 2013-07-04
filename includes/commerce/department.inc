@@ -17,7 +17,7 @@ function courier_connector_commerce_process_department($responseXml) {
           field_config.module from field_config_instance inner join field_config on field_config.id = field_config_instance.field_id
           where field_config_instance.bundle = 'billing' and field_config_instance.entity_type = 'commerce_customer_profile'")->fetchAllAssoc("field_name");
 
-  foreach ($responseXml->$plural->$objectType as $user) {
+  foreach ($responseXml->$plural->$objectType as $department) {
     //check the processed tag, to see what we need to do with this response
     //4 possibles
     //error
@@ -25,20 +25,19 @@ function courier_connector_commerce_process_department($responseXml) {
     //modded
     //read
     $i = 0;
-    foreach ($responseXml->$plural->$objectType as $department) {
-      watchdog('Courier import departments', ++$i . ' ' . $department->$id . ' is ' . $department->DepartmentName . ' Response status: ' . $department->Processed . "\n", array(), WATCHDOG_DEBUG);
-    }
+    watchdog('Courier import departments', ++$i . ' ' . $department->$id . ' is ' . $department->DepartmentName . ' Response status: ' . $department->Processed . "\n", array(), WATCHDOG_DEBUG);
 
-    if ($user->Processed == "error") {
+
+    if ($department->Processed == "error") {
       //was already logged
 
     }
-    elseif ($user->Processed == "added") {
+    elseif ($department->Processed == "added") {
     }
-    elseif ($user->Processed == "modded") {
+    elseif ($department->Processed == "modded") {
     }
     //these are the result of a query, we will update / insert these
-    elseif ($user->Processed == "read") {
+    elseif ($department->Processed == "read") {
 
 
     }
