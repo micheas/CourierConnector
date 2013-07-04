@@ -39,7 +39,9 @@ function courier_connector_process_field($value, $field_name, $field_type) {
       $vid = $vocabulary['vid'];
       $machine_name = $vocabulary['machine_name'];
       if ($machine_name == 'department') {
-        db_query('select tid from courier_department_cache where qb_id = :qbid', array(':qbid' => trim($value)));
+        $query = db_query('select tid from courier_department_cache where qb_id = :qbid', array(':qbid' => trim($value)));
+        $result = $query->fetchObject();
+        $value = $result->tid;
       }
       else {
         $term = taxonomy_get_term_by_name($value, $machine_name);
