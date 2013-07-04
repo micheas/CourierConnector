@@ -25,6 +25,8 @@ function courier_connector_commerce_process_department($responseXml) {
     //modded
     //read
     $i = 0;
+    $department_name = $department->DepartmentName;
+    $department_id = $department->$id;
     watchdog('Courier import departments', ++$i . ' ' . $department->$id . ' is ' . $department->DepartmentName . ' Response status: ' . $department->Processed . "\n", array(), WATCHDOG_DEBUG);
 
 
@@ -32,14 +34,36 @@ function courier_connector_commerce_process_department($responseXml) {
       //was already logged
 
     }
-    elseif ($department->Processed == "added") {
-    }
-    elseif ($department->Processed == "modded") {
-    }
-    //these are the result of a query, we will update / insert these
-    elseif ($department->Processed == "read") {
+    elseif ($department->Processed == "added" || $department->Processed == "modded" || $department->Processed == "read") {
+      // Test if the department taxonomy term exists, if not create it.
+
+      $value = $department_name;
+
+      $vocabulary = courier_connector_get_vocabulary('department');
+      watchdog('Quickbooks import', print_r($vocabulary, TRUE) . '$value = ' . $value, array(), WATCHDOG_INFO);
+      $vid = $vocabulary['vid'];
+      $machine_name = $vocabulary['machine_name'];
+      $term = taxonomy_get_term_by_name($value, $machine_name);
+
+      if (count($term) === 0) {
+        $term = new stdClass();
+        $term->name = $value;
+        $term->vid = $vid;
+        $term->field_quickbooks_id[LANGUAGE_NONE][0]['value']  = $department_id;
+        taxonomy_term_save($term);
+        $value = $term->tid;
+      }
+      else {
+        foreach ($term as $tid) {
+          $value = $tid->tid;
+        }
+      }
 
 
+    }
+    else {
+      // unexpected result write the result in watchdog
+      watchdog('Courier import departments', 'Unexpected result of ' . $department->Processed . " returned.\n", array(), WATCHDOG_DEBUG);
     }
 
 
