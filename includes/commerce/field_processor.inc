@@ -41,6 +41,7 @@ function courier_connector_process_field($value, $field_name, $field_type) {
       if ($machine_name == 'department') {
         $query = db_query('select tid from courier_department_cache where qb_id = :qbid', array(':qbid' => trim($value)));
         $result = $query->fetchObject();
+        watchdog('Quickbooks import', print_r($result, TRUE) . '$value = ' . $value, array(), WATCHDOG_CRITICAL);
         $value = $result->tid;
       }
       else {
@@ -60,7 +61,7 @@ function courier_connector_process_field($value, $field_name, $field_type) {
         }
       }
 
-      $return_field[LANGUAGE_NONE][0]['tid'] = $value;
+      $return_field[LANGUAGE_NONE][0]['tid'] = (int) $value;
       break;
 
     case 'number':
