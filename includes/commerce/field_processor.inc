@@ -4,6 +4,8 @@ function courier_connector_process_field($value, $field_name, $field_type) {
 
   $return_field = array();
 
+  set_time_limit(30);
+
   switch ($field_type) {
 
     case 'entityreference':
@@ -62,7 +64,7 @@ function courier_connector_process_field($value, $field_name, $field_type) {
         }
       }
 
-      $return_field[LANGUAGE_NONE][0]['tid'] = (int) $value;
+      $return_field[LANGUAGE_NONE][0]['tid'] = $value;
       break;
 
     case 'number':
