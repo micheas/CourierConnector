@@ -17,7 +17,6 @@ function courier_connector_commerce_7_uninstall() {
 
 /**
  * Implements hook_schema().
- * Commented out because it does not fucking work.
  */
 function courier_connector_commerce_7_schema() {
   $schema = array();
@@ -44,12 +43,14 @@ function courier_connector_commerce_7_schema() {
       ),
       'department' => array(
         'description' => 'The department name',
-        'type' => 'text',
+        'type' => 'varchar',
+        'length' => 255,
         'not null' => FALSE,
       ),
       'qb_id' => array(
         'description' => 'The quick books id',
-        'type' => 'text',
+        'type' => 'varchar',
+        'length' => 255,
         'not null' => FALSE,
       ),
     ),
