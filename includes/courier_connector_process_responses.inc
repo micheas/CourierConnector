@@ -58,7 +58,7 @@ function courier_connector_process_response($job_id) {
 
 
     //call the function
-    watchdog('Quickbooks import', print_r($response_parameters[COURIER_CONNECTOR_CART][$method_name]['file'], true) , WATCHDOG_DEBUG);
+//watchdog('Quickbooks import', print_r($response_parameters[COURIER_CONNECTOR_CART][$method_name]['file'], true) , WATCHDOG_DEBUG);
     require_once $response_parameters[COURIER_CONNECTOR_CART][$method_name]['file'];
     $response_parameters[COURIER_CONNECTOR_CART][$method_name]['method']($doc);
 
