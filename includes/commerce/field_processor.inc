@@ -35,13 +35,14 @@ function courier_connector_process_field($value, $field_name, $field_type) {
     case 'taxonomy_term_reference':
 
       $vocabulary = courier_connector_get_vocabulary($field_name);
+      $original_value = $value;
       watchdog('Quickbooks import', print_r($vocabulary, TRUE) . '$value = ' . $value, array(), WATCHDOG_INFO);
       $vid = $vocabulary['vid'];
       $machine_name = $vocabulary['machine_name'];
       if ($machine_name == 'department') {
-        $query = db_query('select tid from courier_department_cache where qb_id = :qbid', array(':qbid' => trim($value)));
+        $query = db_query('select tid from courier_department_cache where qb_id = :qbid', array(':qbid' => $value));
         $result = $query->fetchObject();
-        watchdog('Quickbooks import', print_r($result, TRUE) . '$value = ' . $value, array(), WATCHDOG_CRITICAL);
+        watchdog('Quickbooks import', '$value = ' . $original_value . ' resulted in: ' . print_r($result, TRUE)  , array(), WATCHDOG_CRITICAL);
         $value = $result->tid;
       }
       else {
