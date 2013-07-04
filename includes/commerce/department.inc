@@ -49,7 +49,7 @@ function courier_connector_commerce_process_department($responseXml) {
         $term->field_quickbooks_id[LANGUAGE_NONE][0]['value']  = $department_id;
         taxonomy_term_save($term);
         $tid = $term->tid;
-        db_insert('geo_location_debug')->fields(array(
+        db_insert('courier_department_cache')->fields(array(
           'vid' => $vid,
           // 'timestamp' let the database server set it.
           'tid' => $tid,
