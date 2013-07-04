@@ -440,10 +440,13 @@ function courier_connector_get_vocabulary($field_name) {
     return $vocabulary;
   }
   $fi = field_info_field($field_name);
-  foreach($fi['settings']['allowed_values'] as $voc) {
-    if ($voc['vocabulary'] && $_vocabulary_by_name[$voc['vocabulary']]) {
-      $vocabulary['machine_name'] = $_vocabulary_by_name[$voc['vocabulary']]->machine_name;
-      $vocabulary['vid'] = $_vocabulary_by_name[$voc['vocabulary']]->vid;
+
+  if (isset($fi['settings']) && isset($fi['settings']['allowed_values'])) {
+    foreach($fi['settings']['allowed_values'] as $voc) {
+      if ($voc['vocabulary'] && $_vocabulary_by_name[$voc['vocabulary']]) {
+        $vocabulary['machine_name'] = $_vocabulary_by_name[$voc['vocabulary']]->machine_name;
+        $vocabulary['vid'] = $_vocabulary_by_name[$voc['vocabulary']]->vid;
+      }
     }
   }
   return $vocabulary;
