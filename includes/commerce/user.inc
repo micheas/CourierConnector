@@ -16,6 +16,7 @@ function courier_connector_commerce_process_user($responseXml) {
   $plural = $objectType . 's';
   $id = $objectType . 'ID';
 
+  // This should be rewritten so it can deal with table prefixes.
   $field_config_data = db_query("select field_config_instance.field_name, field_config.type,
           field_config.module from field_config_instance inner join field_config on field_config.id = field_config_instance.field_id
           where field_config_instance.bundle = 'billing' and field_config_instance.entity_type = 'commerce_customer_profile'")->fetchAllAssoc("field_name");
