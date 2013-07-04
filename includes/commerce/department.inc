@@ -37,27 +37,26 @@ function courier_connector_commerce_process_department($responseXml) {
     elseif ($department->Processed == "added" || $department->Processed == "modded" || $department->Processed == "read") {
       // Test if the department taxonomy term exists, if not create it.
 
-      $value = $department_name;
-
-      $vocabulary = courier_connector_get_vocabulary('department');
-      watchdog('Quickbooks import', print_r($vocabulary, TRUE) . '$value = ' . $value, array(), WATCHDOG_INFO);
-      $vid = $vocabulary['vid'];
-      $machine_name = $vocabulary['machine_name'];
-      $term = taxonomy_get_term_by_name($value, $machine_name);
+      $vocabulary = taxonomy_vocabulary_machine_name_load('department');
+      watchdog('Quickbooks import', print_r($vocabulary, TRUE) . '$value = ' . $department_name, array(), WATCHDOG_INFO);
+      $vid = $vocabulary->vid;
+      $term = taxonomy_get_term_by_name($department_name, 'department');
 
       if (count($term) === 0) {
         $term = new stdClass();
-        $term->name = $value;
+        $term->name = $department_name;
         $term->vid = $vid;
         $term->field_quickbooks_id[LANGUAGE_NONE][0]['value']  = $department_id;
         taxonomy_term_save($term);
-        $value = $term->tid;
+        $tid = $term->tid;
       }
       else {
         foreach ($term as $tid) {
-          $value = $tid->tid;
+          $tid = $tid->tid;
         }
       }
+
+      watchdog('Quickbooks import', $department_name . ' has a TID of ' . $tid, array(), WATCHDOG_INFO , 'taxonomy/term/' . $tid);
 
 
     }
