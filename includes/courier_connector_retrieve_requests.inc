@@ -51,15 +51,10 @@ function courier_connector_retrieve_requests($job_id) {
       $courier_requests["attrs"] = array("job_id" => $record['job_id'], "job_number" => $job_number);
     }
 
-    if (courier_connector_get_drupal_version() == '6') {
-      db_query("update courier_requests set processed = 1, processed_date = '%s' where job_id = %d", date('Y-m-d H:i:s', time()), $job_id['job_id']);
-    }
-    else {
-      $query = db_update("courier_requests");
-      $query->fields(array("processed" => 1, "processed_date" => date('Y-m-d H:i:s', time())));
-      $query->condition('job_id', $job_id['job_id']);
-      $query->execute();
-    }
+    $query = db_update("courier_requests");
+    $query->fields(array("processed" => 1, "processed_date" => date('Y-m-d H:i:s', time())));
+    $query->condition('job_id', $job_id['job_id']);
+    $query->execute();
 
     /**
      * Todo:
@@ -127,16 +122,9 @@ function courier_connector_process_request($job_id, $object_type, $parameters, $
             $object_ids = array();
 
             //get a list of all of the objects
-            if (courier_connector_get_drupal_version() == '6') {
-              //TODO
-              //            $request_data = db_query("select job_id, job_date, request_type, request_method, request_data from courier_requests where job_id = %d order by job_date asc", $job_id['job_id']);           
-              //            $result = db_fetch_array($request_data);
-            }
-            else {
-              $query = db_select($parameter['table']);
-              $query->fields($parameter['table'], array($parameter['cart_id']));
-              $object_ids = $query->execute();
-            }
+            $query = db_select($parameter['table']);
+            $query->fields($parameter['table'], array($parameter['cart_id']));
+            $object_ids = $query->execute();
 
             foreach ($object_ids as $i) {
               $i = (array) $i;

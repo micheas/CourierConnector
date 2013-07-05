@@ -2,19 +2,6 @@
 
 //get a list of fields that have been mapped, this will be iterated to do the assignment
 function courier_connector_get_mapped_field_list($type, $filter = NULL) {
-  if (courier_connector_get_drupal_version() == "6") {
-    $query = "select distinct to_field from courier_mapping_to_{$type}";
-
-    if (isset($filter)) {
-      $query .= " where to_field like {$filter}%";
-    }
-    $q = db_query($query);
-    while ($row = db_fetch_array($q)) {
-      $ret[] = $row['to_field'];
-    }
-
-    return $ret;
-  }
 
   $query = db_select("courier_mapping_to_{$type}", "map_to");
   $query->fields("map_to", array("to_field"));
@@ -37,20 +24,14 @@ function courier_connector_map_value($type, $to_field, $record) {
 
   $mapped_fields = array();
 
-  if (courier_connector_get_drupal_version() == "6") {
-    $result = db_query("select map_to.default_value, map_to.commands, map_from.from_field, map_from.from_alternative, map_from.sort_order, map_from.commands from courier_mapping_to_{$type} map_to left join courier_mapping_from_{$type} map_from on map_from.to_{$type}_field_id = map_to.to_{$type}_field_id where map_to.to_field = '{$to_field}' order by sort_order asc");
-    $mapped_fields = db_fetch_array($result);
-  }
-  else {
-    $query = db_select("courier_mapping_to_{$type}", "map_to");
-    $query->fields("map_to", array("default_value", "commands"));
-    $query->fields("map_from", array("from_field", "from_alternative", "sort_order", "commands"));
-    $query->leftJoin("courier_mapping_from_{$type}", "map_from", "map_from.to_{$type}_field_id = map_to.to_{$type}_field_id");
-    $query->condition("map_to.to_field", $to_field);
-    $query->orderBy("sort_order", "ASC");
+  $query = db_select("courier_mapping_to_{$type}", "map_to");
+  $query->fields("map_to", array("default_value", "commands"));
+  $query->fields("map_from", array("from_field", "from_alternative", "sort_order", "commands"));
+  $query->leftJoin("courier_mapping_from_{$type}", "map_from", "map_from.to_{$type}_field_id = map_to.to_{$type}_field_id");
+  $query->condition("map_to.to_field", $to_field);
+  $query->orderBy("sort_order", "ASC");
 
-    $mapped_fields = $query->execute();
-  }
+  $mapped_fields = $query->execute();
 
   $return_value = FALSE;
 

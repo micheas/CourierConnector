@@ -1,15 +1,6 @@
 <?php
 
 /**
- * Wrapper function for D6
- * @param $form_state
- * @return mixed
- */
-function courier_connector_logs_form_6(&$form_state) {
-  return courier_connector_logs_form($form_state, NULL);
-}
-
-/**
  * Builds the log form.
  * @param $form
  * @param $form_state
@@ -52,9 +43,6 @@ function courier_connector_logs_form($form, &$form_state) {
     }
 
     $value_type = "#markup";
-    if (courier_connector_get_drupal_version() == 6) {
-      $value_type = "#value";
-    }
 
     $form['request_log']['job_date'][$row['jobid']] = array($value_type => check_plain($row['request_date']));
     $form['request_log']['request_type'][$row['jobid']] = array($value_type => check_plain($row['request_type']));
@@ -83,9 +71,7 @@ function courier_connector_logs_form($form, &$form_state) {
  * @return string
  */
 function theme_courier_connector_request_log_table($form) {
-  if (courier_connector_get_drupal_version() == '7') {
-    $form = $form['form'];
-  }
+  $form = $form['form'];
 
   $rows = array();
 
@@ -109,15 +95,10 @@ function theme_courier_connector_request_log_table($form) {
     );
   }
 
-  if (courier_connector_get_drupal_version() == '6') {
-    $output = theme('table', $header, $rows);
-  }
-  else {
-    $output = theme('table', array(
-      'header' => $header,
-      'rows' => $rows
-    ));
-  }
+  $output = theme('table', array(
+    'header' => $header,
+    'rows' => $rows
+  ));
 
   return $output;
 }

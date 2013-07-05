@@ -88,12 +88,7 @@ function get_courier_menu() {
     'file' => 'includes/courier_connector_admin_config.inc',
   );
 
-  if (courier_connector_get_drupal_version() == 6) {
-    $items['admin/store/integration/config']['page arguments'] = array('courier_connector_config_form_6');
-  }
-  else {
-    $items['admin/store/integration/config']['page arguments'] = array('courier_connector_config_form');
-  }
+  $items['admin/store/integration/config']['page arguments'] = array('courier_connector_config_form');
 
 
   $items['admin/store/integration/log'] = array(
@@ -106,12 +101,7 @@ function get_courier_menu() {
     'file' => 'includes/courier_connector_admin_log.inc',
   );
 
-  if (courier_connector_get_drupal_version() == 6) {
-    $items['admin/store/integration/log']['page arguments'] = array('courier_connector_logs_form_6');
-  }
-  else {
-    $items['admin/store/integration/log']['page arguments'] = array('courier_connector_logs_form');
-  }
+  $items['admin/store/integration/log']['page arguments'] = array('courier_connector_logs_form');
 
 //  $items['admin/store/integration/mapping'] = array(
 //    'title' => 'Field Mappings for the integration.',
@@ -201,18 +191,11 @@ function get_courier_connector_rules_action_info() {
     'base' => 'courier_connector_download_order',
   );
 
-  if (courier_connector_get_drupal_version() == "6") {
-    // $actions['add_item']['module'] = "Courier Connector";
-    $actions['read_items']['module'] = "Courier Connector";
-    //  $actions['read_customers']['module'] = "Courier Connector";
-    $actions['add_order']['module'] = "Courier Connector";
-  }
-  else {
-    //  $actions['add_item']['group'] = "Courier Connector";
-    $actions['read_items']['group'] = "Courier Connector";
-    //  $actions['read_customers']['group'] = "Courier Connector";
-    $actions['add_order']['group'] = "Courier Connector";
-  }
+  //  $actions['add_item']['group'] = "Courier Connector";
+  $actions['read_items']['group'] = "Courier Connector";
+  //  $actions['read_customers']['group'] = "Courier Connector";
+  $actions['add_order']['group'] = "Courier Connector";
+
   return $actions;
 }
 
@@ -452,6 +435,3 @@ function courier_connector_get_vocabulary($field_name) {
   return $vocabulary;
 }
 
-function courier_connector_get_drupal_version() {
-  return 7;
-}
