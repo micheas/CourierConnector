@@ -3,8 +3,7 @@
 require_once 'includes/courier_connector_misc.inc';
 define('COURIER_CONNECTOR_CART', 'ubercart');
 
-function courier_connector_uber_6_menu()
-{  
+function courier_connector_uber_6_menu() {
   return get_courier_menu();
 }
 
@@ -48,26 +47,26 @@ function courier_connector_uber_6_menu()
 //}
 
 /**
-* Implementation of hook_ca_action().
-*/
+ * Implementation of hook_ca_action().
+ */
 function courier_connector_uber_6_ca_action() {
-  
+
   //Download order action
   $order_arg = array(
     '#entity' => 'uc_order',
     '#title' => t('Order'),
   );
- 
+
   $actions['download_order'] = array(
     '#title' => t('Download order to Quickbooks'),
     '#category' => t('Order'),
     '#callback' => 'courier_connector_uber_6_download_order',
     '#arguments' => array(
-      'order' => $order_arg,        
+      'order' => $order_arg,
     ),
   );
   //////
-    
+
 //  //Download Item Action
 //  $product_arg = array(
 //    '#entity' => 'node',
@@ -83,23 +82,23 @@ function courier_connector_uber_6_ca_action() {
 //    ),
 //  );
 //  //////
-    
+
   //Download Customer Action  
   $customer_arg = array(
     '#entity' => 'user',
     '#title' => t('Customer'),
-  );  
- 
+  );
+
   $actions['download_customer'] = array(
     '#title' => t('Download customer to Quickbooks'),
     '#category' => t('User'),
     '#callback' => 'courier_connector_uber_6_download_customer',
     '#arguments' => array(
-      'customer' => $customer_arg,      
+      'customer' => $customer_arg,
     ),
-  );  
+  );
   ///////  
-  
+
   //Request Item Action
 //  $item_number_arg = array(
 //    '#entity' => 'text',
@@ -147,16 +146,16 @@ function courier_connector_uber_6_ca_action() {
   return $actions;
 }
 
-function courier_connector_uber_6_download_order($order) {           
+function courier_connector_uber_6_download_order($order) {
   $request_data = serialize(array("SalesOrder_ids" => array($order->order_id)));
-  
+
   //Save the order download request  
-  db_query("insert into {courier_requests} (request_type, request_method, request_data) values('add', '%s', '%s')", $order_type, $request_data);  
-  db_query("insert into {courier_transaction_log} (type, message, status) values(1, 'Order Queued for download: {$order->order_id}, Order Type: {$order_type}', true)");  
+  db_query("insert into {courier_requests} (request_type, request_method, request_data) values('add', '%s', '%s')", $order_type, $request_data);
+  db_query("insert into {courier_transaction_log} (type, message, status) values(1, 'Order Queued for download: {$order->order_id}, Order Type: {$order_type}', true)");
 }
 
 function courier_connector_uber_6_download_customer($user) {
-  
+
 }
 
 //custom rules exposed
@@ -165,22 +164,22 @@ function courier_connector_uber_6_rules_action_info() {
 }
 
 function courier_connector_uber_6_read_items($from_date) {
-  
+
 }
 
 function courier_connector_uber_6_read_customers($from_date) {
-  
+
 }
 
 function courier_connector_uber_6_download_items($from_date) {
-  
+
 }
 
 /**
-  * Implements hook_services_resources().
-  */
+ * Implements hook_services_resources().
+ */
 function courier_connector_uber_6_services_resources() {
- return get_courier_connector_services_resources();
+  return get_courier_connector_services_resources();
 }
 
 /**
@@ -189,7 +188,7 @@ function courier_connector_uber_6_services_resources() {
 function courier_connector_services_request_postprocess_alter(&$controller, &$args, &$result) {
 //  global $services_log_globals;
 // $services_log_globals['result'] = $result;
-  
+
   //echo "here";
 }
 
@@ -199,15 +198,15 @@ function courier_connector_services_request_postprocess_alter(&$controller, &$ar
 function courier_connector_uber_6_rest_server_request_parsers_alter(&$parsers) {
   get_courier_connector_rest_server_request_parsers_alter($parsers);
 }
- 
+
 function courier_connector_uber_6_rest_server_response_formatters_alter(&$formatters) {
   get_courier_connector_rest_server_response_formatters_alter($formatters);
 }
 
 /**
-  * Implements hook_permission().
-  */
-function courier_connector_uber_6_permission() { 
+ * Implements hook_permission().
+ */
+function courier_connector_uber_6_permission() {
   return get_courier_connector_permission();
 }
 

@@ -27,6 +27,10 @@
         "NonInventoryItem": {
             "file": "commerce/product.inc",
             "method": "courier_connector_commerce_process_product"
+        },
+        "Department": {
+            "file": "commerce/department.inc",
+            "method": "courier_connector_commerce_process_department"
         }
     },
     "ubercart": {

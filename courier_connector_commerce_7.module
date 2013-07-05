@@ -3,7 +3,7 @@
 require_once 'includes/courier_connector_misc.inc';
 define('COURIER_CONNECTOR_CART', 'commerce');
 
-function courier_connector_commerce_7_menu() {  
+function courier_connector_commerce_7_menu() {
   return get_courier_menu();
 }
 
@@ -14,44 +14,44 @@ function courier_connector_commerce_7_rules_action_info() {
 
 function courier_connector_read_items($from_date) {
   $item_type = variable_get("courier_connector_item_type", "ItemInventory");
-          
-  $req = array();  
-   
-  db_insert('courier_requests') 
-              ->fields(array(
-                'request_type' => 'read',
-                'request_method' => $item_type,
-                'request_data' => serialize(array("TimeModified"=>"1/1/2001"))
-              ))
-              ->execute();
+
+  $req = array();
+
+  db_insert('courier_requests')
+    ->fields(array(
+      'request_type' => 'read',
+      'request_method' => $item_type,
+      'request_data' => serialize(array("TimeModified" => "1/1/2001"))
+    ))
+    ->execute();
 }
 
 function courier_connector_read_customers($from_date) {
-  
+
 }
 
 function courier_connector_download_items($items) {
-  
+
 }
 
-function courier_connector_download_order($order) {  
-  
+function courier_connector_download_order($order) {
+
   $order_type = variable_get("courier_connector_order_type", "SalesOrder");
-          
-  $req = array();  
-   
-  db_insert('courier_requests') 
-              ->fields(array(
-                'request_type' => 'add',
-                'request_method' => $order_type,
-                'request_data' => serialize(array($order_type . "_ids"=>array($order->order_id)))
-              ))
-              ->execute();
+
+  $req = array();
+
+  db_insert('courier_requests')
+    ->fields(array(
+      'request_type' => 'add',
+      'request_method' => $order_type,
+      'request_data' => serialize(array($order_type . "_ids" => array($order->order_id)))
+    ))
+    ->execute();
 }
 
 /**
-  * Implements hook_services_resources().
-  */
+ * Implements hook_services_resources().
+ */
 function courier_connector_commerce_7_services_resources() {
   return get_courier_connector_services_resources();
 }
@@ -62,15 +62,15 @@ function courier_connector_commerce_7_services_resources() {
 function courier_connector_commerce_7_rest_server_request_parsers_alter(&$parsers) {
   get_courier_connector_rest_server_request_parsers_alter($parsers);
 }
- 
+
 function courier_connector_commerce_7_rest_server_response_formatters_alter(&$formatters) {
   get_courier_connector_rest_server_response_formatters_alter($formatters);
 }
 
 /**
-  * Implements hook_permission().
-  */
-function courier_connector_commerce_7_permission() { 
+ * Implements hook_permission().
+ */
+function courier_connector_commerce_7_permission() {
   return get_courier_connector_permission();
 }
 

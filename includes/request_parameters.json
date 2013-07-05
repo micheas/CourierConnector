@@ -78,7 +78,7 @@
                 "cart_id": "order_id",
                 "foreign_id": {
                     "SalesOrderID": "field_quickbooks_id:und:0:value"
-                },                
+                },
                 "sub_methods": {
                     "Customer": "commerce_customer_billing:und:0:profile_id"
                 },
@@ -110,8 +110,8 @@
                     "SalesOrderItemID": "field_quickbooks_id:und:0:value"
                 },
                 "foreign_relation": {
-                  "object_type":"InventoryItem",
-                  "object_id": "commerce_product:und:0:product_id"
+                    "object_type": "InventoryItem",
+                    "object_id": "commerce_product:und:0:product_id"
                 },
                 "field_filter": {
                     "type": "product"

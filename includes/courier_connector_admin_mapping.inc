@@ -38,5 +38,5 @@ function courier_ubercart_pos_mapping_form(&$form_state) {
  * Form validate handler for the courier_quickbooks_config_form.
  */
 function courier_ubercart_pos_mapping_form_validate(&$form_state) {
-  
+
 }

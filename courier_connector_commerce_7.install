@@ -1,0 +1,69 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions Grossly incomplete.
+ */
+
+
+function courier_connector_commerce_7_install() {
+
+}
+
+function courier_connector_commerce_7_uninstall() {
+  // $sql = 'DROP TABLE geo_location_debug';
+  //db_query($sql);
+}
+
+
+/**
+ * Implements hook_schema().
+ */
+function courier_connector_commerce_7_schema() {
+  $schema = array();
+
+  $schema['courier_department_cache'] = array(
+    'fields' => array(
+      'id' => array(
+        'description' => 'The log ID',
+        'type' => 'serial'
+      ),
+      'vid' => array(
+        'description' => 'The vocabulary ID',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'tid' => array(
+        'description' => 'The term ID',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'department' => array(
+        'description' => 'The department name',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+      'qb_id' => array(
+        'description' => 'The quick books id',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array(
+      'id',
+    ),
+    'unique key' => array(
+      'tid',
+      'department',
+      'qb_id',
+    ),
+  );
+
+  return $schema;
+}
+
