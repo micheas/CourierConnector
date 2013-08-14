@@ -1,73 +1,17 @@
 <?php
+/**
+ * @file
+ * Sets up the connector and admin menu.
+ */
 
 require_once 'courier_connector_rest_server.inc';
 
+/**
+ * @return array
+ */
 function get_courier_menu() {
   $items = array();
 
-//  $items['courier/update'] = array(    
-//    'page callback' => 'courier_update', 
-//    'access arguments' => array('access content'),
-//    'type' => MENU_CALLBACK,
-//    'file' => 'includes/update.inc',
-//  );
-//  
-//   $items['courier/update.php'] = array(    
-//    'page callback' => 'courier_update', 
-//    'access arguments' => array('access content'),
-//    'type' => MENU_CALLBACK,
-//    'file' => 'includes/update.inc',
-//  );
-//  
-//  
-//  $items['courier/generate_request'] = array(    
-//    'page callback' => 'generate_request', 
-//    'access arguments' => array('access content'),
-//    'type' => MENU_CALLBACK,
-//    'file' => 'includes/request_handler.inc',
-//  );   
-//  
-//  $items['admin/config/courier'] = array(    
-//    'title' => 'Courier Settings',
-//    'page callback' => 'drupal_get_form', 
-//    'page arguments' => array('courier_connector_admin'),
-//    'access arguments' => array('access content'),
-//    'type' => MENU_CALLBACK,
-//    'file' => 'includes/admin.inc',
-//  );
-//  
-//  $items['admin/config/courier/mapping/product'] = array( 
-//    'title' => 'Courier Product Mapping',
-//    'page callback' => 'courier_connector_admin_mapping_product', 
-//    'access arguments' => array('access content'),
-//    'type' => MENU_CALLBACK,
-//    'file' => 'includes/admin_mapping.inc',
-//  );
-//  
-//  $items['admin/config/courier/mapping/customer'] = array(    
-//    'title' => 'Courier User Mapping',
-//    'page callback' => 'courier_connector_admin_mapping_user', 
-//    'access arguments' => array('access content'),
-//    'type' => MENU_CALLBACK,
-//    'file' => 'includes/admin_mapping.inc',
-//  );
-//  
-//  $items['admin/config/courier/request'] = array(    
-//    'title' => 'Courier Requests',
-//    'page callback' => 'drupal_get_form', 
-//    'page arguments' => array('courier_connector_admin_requests'),
-//    'access arguments' => array('access content'),
-//    'type' => MENU_CALLBACK,
-//    'file' => 'includes/admin_requests.inc',
-//  );
-//  
-//   $items['courier'] = array(    
-//    'title' => '',
-//    'page callback' => 'courier_connector_courier_ws',     
-//    'access arguments' => array('access content'),
-//    'type' => MENU_CALLBACK,
-//    'file' => 'includes/webservice/courier_ws.php',
-//  );
   $items['admin/store/integration'] = array(
     'title' => 'QuickBooks Integration',
     'description' => 'Administer your QuickBooks Integration.',
@@ -90,7 +34,6 @@ function get_courier_menu() {
 
   $items['admin/store/integration/config']['page arguments'] = array('courier_connector_config_form');
 
-
   $items['admin/store/integration/log'] = array(
     'title' => 'Logs',
     'description' => 'Communication logs.',
@@ -103,57 +46,14 @@ function get_courier_menu() {
 
   $items['admin/store/integration/log']['page arguments'] = array('courier_connector_logs_form');
 
-//  $items['admin/store/integration/mapping'] = array(
-//    'title' => 'Field Mappings for the integration.',
-//    'description' => 'Integration Mappings.',
-//    'page callback' => 'drupal_get_form',
-//    'access arguments' => array('access administration pages'),
-//    'page arguments' => array('courier_connector_mapping_form'),
-//    'type' => MENU_NORMAL_ITEM,
-//    'weight' => 50,
-//    'file' => 'includes/courier_connector_admin_mapping.inc',
-//  );
-
-//  $items['admin/store/integration/command_queue'] = array(
-//    'title' => 'Queue Command',
-//    'description' => 'Queue commands to be processed by the integration.',
-//    'page callback' => 'drupal_get_form',
-//    'page arguments' => array('courier_connector_queue_form'),
-//    'access arguments' => array('access administration pages'),
-//    'type' => MENU_NORMAL_ITEM,
-//    'weight' => 50,
-//    'file' => 'includes/courier_connector_admin_queue.inc',
-//  );
-
-//  $items['courier_connector/update'] = array(    
-//    'page callback' => 'courier_connector_courier_update', 
-//    'access arguments' => array('access content'),
-//    'type' => MENU_CALLBACK,
-//    'file' => 'includes/courier_connector_update.inc',
-//  );
-//  
-//  $items['courier_connector/generate_request'] = array(    
-//    'page callback' => 'courier_connector_generate_request', 
-//    'access arguments' => array('access content'),
-//    'type' => MENU_CALLBACK,
-//    'file' => 'includes/courier_connector_request_handler.inc',
-//  );   
   return $items;
 }
 
-//custom rules exposed
+/**
+ * custom rules exposed
+ * @return mixed
+ */
 function get_courier_connector_rules_action_info() {
-//  $actions['add_item'] = array(
-//    'arguments' => array(          
-//      'item_ids' => array(
-//        'type' => 'text',
-//        'label' => t('Comma seperated list of Item ids to download'),
-//        'save' => true
-//      ),
-//    ),
-//    'label' => t('Download item(s) into Quickbooks'),    
-//    'base' => 'courier_connector_download_items',  
-//  );
 
   $actions['read_items'] = array(
     'arguments' => array(
@@ -166,18 +66,6 @@ function get_courier_connector_rules_action_info() {
     'label' => t('Read item(s) from Quickbooks'),
     'base' => 'courier_connector_read_items',
   );
-
-//  $actions['read_customers'] = array(
-//    'arguments' => array(          
-//      'date_modified' => array(
-//        'type' => 'date',
-//        'label' => t('From Modified Date'),
-//        'save' => true
-//      ),
-//    ),
-//    'label' => t('Read customers from Quickbooks'),    
-//    'base' => 'courier_connector_read_customers',  
-//  );
 
   $actions['add_order'] = array(
     'parameter' => array(
@@ -199,6 +87,9 @@ function get_courier_connector_rules_action_info() {
   return $actions;
 }
 
+/**
+ * @return array
+ */
 function get_courier_connector_services_resources() {
   return array(
     'CourierConnector' => array(
@@ -206,7 +97,7 @@ function get_courier_connector_services_resources() {
         'help' => 'Retrieves open requests, if the job_id is passed will call the processing of that job response',
         'file' => array(
           'type' => 'inc',
-          'module' => 'courier_connector_uber_7',
+          'module' => 'courier_connector_uber',
           'name' => 'includes/courier_connector_retrieve_requests'
         ),
         'callback' => 'courier_connector_retrieve_requests',
@@ -227,7 +118,7 @@ function get_courier_connector_services_resources() {
         'help' => 'Create a response to a request',
         'file' => array(
           'type' => 'inc',
-          'module' => 'courier_connector_uber_7',
+          'module' => 'courier_connector_uber',
           'name' => 'includes/courier_connector_create_responses'
         ),
         'callback' => 'courier_connector_create_responses',
@@ -290,11 +181,16 @@ function get_courier_connector_services_resources() {
   );
 }
 
+/**
+ * @param $parsers
+ */
 function get_courier_connector_rest_server_request_parsers_alter(&$parsers) {
   $parsers['text/xml'] = "CourierXMLResponseParser::parseXML";
 }
 
-
+/**
+ * @param $formatters
+ */
 function get_courier_connector_rest_server_response_formatters_alter(&$formatters) {
   $formatters['xml']['view'] = 'RESTServerViewCourier';
 }
@@ -326,7 +222,7 @@ function get_courier_connector_permission() {
  *  Whether access is given or not.
  */
 function courier_connector_access($operation, $args) {
-  global $user;
+  $user = $GLOBALS['user'];
   $access = TRUE;
 
   switch ($operation) {
@@ -341,78 +237,32 @@ function courier_connector_access($operation, $args) {
   return $access;
 }
 
+/**
+ * @param $existing
+ * @param $type
+ * @param $theme
+ * @param $path
+ * @return array
+ */
 function get_courier_connector_theme($existing, $type, $theme, $path) {
   $theme_hooks = array(
     'courier_connector_request_table' => array(
       'render element' => 'form',
       'file' => 'includes/courier_connector_admin_queue.inc',
     ),
-//       'courier_connector_product_mapping_table' => array(
-//          'render element' => 'form',
-//          'file' => 'includes/admin.inc',
-//        ), 
-//        'courier_connector_order_table' => array(
-//           'render element' => 'form',
-//           'file' => 'includes/admin_requests.inc',
-//        ),
-//        'courier_connector_product_table' => array(
-//           'render element' => 'form',
-//           'file' => 'includes/admin_requests.inc',
-//        ),
-//        'courier_connector_customer_table' => array(
-//           'render element' => 'form',
-//           'file' => 'includes/admin_requests.inc',
-//        ),
-//         'courier_connector_order_mapping_table' => array(
-//       'render element' => 'form',
-//       'file' => 'includes/admin.inc',
-//        ),
-//        'courier_connector_request_table' => array(
-//       'render element' => 'form',
-//       'file' => 'includes/admin_requests.inc',
-//        ),
     'courier_connector_request_log_table' => array(
       'render element' => 'form',
       'file' => 'includes/courier_connector_admin_log.inc',
     ),
-//        'courier_connector_customer_mapping_table' => array(
-//       'render element' => 'form',
-//       'file' => 'includes/admin.inc',
-//        )  
-
-//        'courier_connector_order_table' => array(
-//           'render element' => 'form',
-//           'file' => 'includes/admin_requests.inc',
-//        ),
-//        'courier_connector_product_table' => array(
-//           'render element' => 'form',
-//           'file' => 'includes/admin_requests.inc',
-//        ),
-//        'courier_connector_customer_table' => array(
-//           'render element' => 'form',
-//           'file' => 'includes/admin_requests.inc',
-//        ),
-//         'courier_connector_order_mapping_table' => array(
-//       'render element' => 'form',
-//       'file' => 'includes/admin.inc',
-//        ),
-//        'courier_connector_request_table' => array(
-//       'render element' => 'form',
-//       'file' => 'includes/admin_requests.inc',
-//        ),
-//       'courier_connector_request_log_table' => array(
-//       'render element' => 'form',
-//       'file' => 'includes/admin_requests.inc',
-//        ),
-//        'courier_connector_customer_mapping_table' => array(
-//       'render element' => 'form',
-//       'file' => 'includes/admin.inc',
-//        )
   );
 
   return $theme_hooks;
 }
 
+/**
+ * @param $field_name
+ * @return array
+ */
 function courier_connector_get_vocabulary($field_name) {
   $vocabulary = array();
   static $_vocabulary_by_name;
@@ -425,7 +275,7 @@ function courier_connector_get_vocabulary($field_name) {
   $fi = field_info_field($field_name);
 
   if (isset($fi['settings']) && isset($fi['settings']['allowed_values'])) {
-    foreach($fi['settings']['allowed_values'] as $voc) {
+    foreach ($fi['settings']['allowed_values'] as $voc) {
       if ($voc['vocabulary'] && $_vocabulary_by_name[$voc['vocabulary']]) {
         $vocabulary['machine_name'] = $_vocabulary_by_name[$voc['vocabulary']]->machine_name;
         $vocabulary['vid'] = $_vocabulary_by_name[$voc['vocabulary']]->vid;

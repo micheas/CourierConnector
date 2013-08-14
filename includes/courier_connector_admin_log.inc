@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * The admin log -- probably should be rewritten to use watchdog().
+ */
+
+/**
  * Builds the log form.
  * @param $form
  * @param $form_state
@@ -19,7 +24,7 @@ function courier_connector_logs_form($form, &$form_state) {
     '#tree' => TRUE,
   );
 
-  $result = db_query("select *, courier_requests.job_id as 'jobid', courier_requests.job_date as 'request_date' from courier_requests left join courier_responses on courier_requests.job_id = courier_responses.job_id order by courier_requests.job_date desc");
+  $result = db_query("SELECT *, courier_requests.job_id AS 'jobid', courier_requests.job_date AS 'request_date' FROM {courier_requests} courier_requests LEFT JOIN {courier_responses} courier_responses ON courier_requests.job_id = courier_responses.job_id ORDER BY courier_requests.job_date DESC");
 
   foreach ($result as $row) {
     //convert the database record from obj to array if need be

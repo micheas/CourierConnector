@@ -1,5 +1,19 @@
 <?php
+/**
+ * @file
+ * Start processing the response.
+ */
 
+/**
+ * @param $response
+ * @param $job_id
+ * @param $job_date
+ * @param $status
+ * @param $record_count
+ * @param $number_of_chunks
+ * @param $chunk_number
+ * @return array
+ */
 function courier_connector_create_responses($response, $job_id, $job_date, $status, $record_count, $number_of_chunks, $chunk_number) {
 
   $response_id = db_insert('courier_responses')

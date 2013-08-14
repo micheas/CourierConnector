@@ -1,17 +1,32 @@
 <?php
 
+/**
+ * @file
+ * The courier functions. Some of which are stub functions.
+ */
+
 require_once 'includes/courier_connector_misc.inc';
 define('COURIER_CONNECTOR_CART', 'commerce');
 
-function courier_connector_commerce_7_menu() {
+/**
+ * Wrapper for get_courier_menu, should be removed.
+ * @return array
+ */
+function courier_connector_commerce_menu() {
   return get_courier_menu();
 }
 
-//custom rules exposed
-function courier_connector_commerce_7_rules_action_info() {
+/**
+ * Wrapper for get_courier_connector_rules_action_info, should be removed.
+ * @return array
+ */
+function courier_connector_commerce_rules_action_info() {
   return get_courier_connector_rules_action_info();
 }
 
+/**
+ * @param $from_date
+ */
 function courier_connector_read_items($from_date) {
   $item_type = variable_get("courier_connector_item_type", "ItemInventory");
 
@@ -26,14 +41,23 @@ function courier_connector_read_items($from_date) {
     ->execute();
 }
 
+/**
+ * @param $from_date
+ */
 function courier_connector_read_customers($from_date) {
 
 }
 
+/**
+ * @param $items
+ */
 function courier_connector_download_items($items) {
 
 }
 
+/**
+ * @param $order
+ */
 function courier_connector_download_order($order) {
 
   $order_type = variable_get("courier_connector_order_type", "SalesOrder");
@@ -52,28 +76,40 @@ function courier_connector_download_order($order) {
 /**
  * Implements hook_services_resources().
  */
-function courier_connector_commerce_7_services_resources() {
+function courier_connector_commerce_services_resources() {
   return get_courier_connector_services_resources();
 }
 
 /**
- * implementation of hook_rest_server_request_parsers_alter()
+ * Implements hook_rest_server_request_parsers_alter().
  */
-function courier_connector_commerce_7_rest_server_request_parsers_alter(&$parsers) {
+function courier_connector_commerce_rest_server_request_parsers_alter(&$parsers) {
   get_courier_connector_rest_server_request_parsers_alter($parsers);
 }
 
-function courier_connector_commerce_7_rest_server_response_formatters_alter(&$formatters) {
+/**
+ * Wrapper function of get_courier_connector_rest_server_response_formatters_alter().
+ * @param $formatters
+ */
+function courier_connector_commerce_rest_server_response_formatters_alter(&$formatters) {
   get_courier_connector_rest_server_response_formatters_alter($formatters);
 }
 
 /**
  * Implements hook_permission().
  */
-function courier_connector_commerce_7_permission() {
+function courier_connector_commerce_permission() {
   return get_courier_connector_permission();
 }
 
-function courier_connector_commerce_7_theme($existing, $type, $theme, $path) {
+/**
+ * wrapper of get_courier_connector_theme().
+ * @param $existing
+ * @param $type
+ * @param $theme
+ * @param $path
+ * @return array
+ */
+function courier_connector_commerce_theme($existing, $type, $theme, $path) {
   return get_courier_connector_theme($existing, $type, $theme, $path);
 }

@@ -1,51 +1,22 @@
 <?php
-//
-//function courier_ubercart_get_user_mapping()
-//{
-//    //define the default mapping, and check the settings to see if there is new mapping defined
-//    $mapping = array();
-//    $mapping['name'] = 'CustomerRecordName';            
-//    $mapping['pass'] = 'Notes';            
-//    $mapping['mail'] = 'Email';            
-//    $mapping['status'] = '{1}';    
-//
-//    return $mapping;            
-//}
+/**
+ * @file sync the ubercart customer with quickbooks customer
+ */
 
-//function courier_ubercart_get_user_order_mapping()
-//{
-//    //define the default mapping, and check the settings to see if there is new mapping defined
-//    $mapping = array();
-//    $mapping['delivery_first_name'] = 'ShippingFirstName';   
-//    $mapping['delivery_last_name'] = 'ShippingLastName';   
-//    $mapping['delivery_street1'] = 'ShippingStreet';   
-//    $mapping['delivery_street2'] = 'ShippingStreet2';   
-//    $mapping['delivery_city'] = 'ShippingCity';   
-//    $mapping['delivery_zone'] = 'ShippingState';   
-//    $mapping['delivery_postal_code'] = 'ShippingPostalCode';   
-//    $mapping['delivery_country'] = 'ShippingCountry';   
-//    $mapping['billing_first_name'] = 'BillingFirstName';   
-//    $mapping['billing_last_name'] = 'BillingLastName';   
-//    $mapping['billing_street1'] = 'BillingStreet';   
-//    $mapping['billing_street2'] = 'BillingStreet2';   
-//    $mapping['billing_city'] = 'BillingCity';   
-//    $mapping['billing_zone'] = 'BillingState';   
-//    $mapping['billing_postal_code'] = 'BillingPostalCode';   
-//    $mapping['billing_country'] = 'BillingCountry';    
-//
-//    return $mapping;            
-//}
-
-function courier_connector_ubercart_process_user($objectType, $responseXml) {
+/**
+ * @param $object_type
+ * @param $response_xml
+ */
+function courier_connector_ubercart_process_user($object_type, $response_xml) {
   //write the error to some log if there was one
-  if ($responseXml->ErrorMessage != '') {
+  if ($response_xml->ErrorMessage != '') {
     //handle error
   }
 
-  $plural = $objectType . 's';
-  $id = $objectType . 'ID';
+  $plural = $object_type . 's';
+  $id = $object_type . 'ID';
 
-  foreach ($responseXml->$plural->$objectType as $user) {
+  foreach ($response_xml->$plural->$object_type as $user) {
     //check the processed tag, to see what we need to do with this response
     //4 possibles
     //error
@@ -57,7 +28,7 @@ function courier_connector_ubercart_process_user($objectType, $responseXml) {
       //was already logged
 
     }
-    else if ($user->Processed == "added") {
+    elseif ($user->Processed == "added") {
       //this is just a response that the record in qb was added
 
       //update the record locally to attach the qb id from this add
@@ -187,9 +158,9 @@ function courier_connector_ubercart_process_user($objectType, $responseXml) {
 
             user_save($customer, $edit);
           } catch (Exception $ex) {
-            $errorMessage = $ex->getMessage();
+            $error_message = $ex->getMessage();
 
-            print_r($errorMessage);
+            print_r($error_message);
           }
         }
       }
@@ -202,7 +173,7 @@ function courier_connector_ubercart_process_user($objectType, $responseXml) {
 //args - array of the query arguments, refer to xml documents for valid list, the default will give all records
 //ids - array of the ids of the customers that you whish to push down, if fromorders is true, then these are order ids
 //fromoders - mark as yes and it will pull the data from the order record, the $ids will be treated as order ids
-function courier_ubercart_request_user($objectType, $args = array("FromModifiedDate" => "1-1-1990"), $ids = array(), $fromorders = FALSE) {
+function courier_ubercart_request_user($object_type, $args = array("FromModifiedDate" => "1-1-1990"), $ids = array(), $from_orders = FALSE) {
   $mapping = db_query("select * from {courier_customer_mapping}");
   $order_mapping = db_query("select * from {courier_order_mapping}");
 
@@ -211,7 +182,7 @@ function courier_ubercart_request_user($objectType, $args = array("FromModifiedD
   //get the orders that are defined in the orderIDs list
   if (count($ids) > 0) {
     foreach ($ids as $id) {
-      if ($fromorders) {
+      if ($from_orders) {
         $order = uc_order_load($id);
         $user = user_load($order->uid);
         $records[] = array("order" => $order, "user" => $user);
@@ -223,7 +194,7 @@ function courier_ubercart_request_user($objectType, $args = array("FromModifiedD
   }
 
   //build the request
-  $doc = new SimpleXMLElement('<' . $objectType . "_Request" . ' />');
+  $doc = new SimpleXMLElement('<' . $object_type . "_Request" . ' />');
 
   //add the query args
   foreach ($args as $arg_name => $arg) {
@@ -248,23 +219,23 @@ function courier_ubercart_request_user($objectType, $args = array("FromModifiedD
 
   if (count($records) > 0) {
     //add the object we are pushing down
-    $objects = $doc->addChild($objectType . "s");
+    $objects = $doc->addChild($object_type . "s");
 
     //loop through each of the orders
     foreach ($records as $usr) {
-      $object = $objects->addChild($objectType);
+      $object = $objects->addChild($object_type);
 
-      if ($fromorders) {
+      if ($from_orders) {
         foreach ($order_mapping as $map) {
           if ($map->qb_field != "Not_Mapped") {
             if ($map->uc_field == 'delivery_zone' || $map->uc_field == 'billing_zone') {
               $country_data = uc_get_country_data(array("country_id" => $usr['order']->$map->uc_field));
               $object->addChild($map->qb_field, $country_data[0]['country_name']);
             }
-            else if ($local == 'delivery_country' || $local == 'billing_country') {
+            elseif ($local == 'delivery_country' || $local == 'billing_country') {
               $object->addChild($map->qb_field, uc_get_zone_code($usr['order']->$map->uc_field));
             }
-            else if ($order->$map->qb_field) {
+            elseif ($order->$map->qb_field) {
               $object->addChild($map->qb_field, $usr['order']->$map->uc_field);
             }
           }
@@ -287,7 +258,7 @@ function courier_ubercart_request_user($objectType, $args = array("FromModifiedD
       $qb_userid = db_query("select field_quickbooks_id_value from {field_data_field_quickbooks_id} where bundle = 'user' and entity_id = :v", array(":v" => $usr->nid))->fetchField();
 
       if ($qb_userid != '')
-        $object->addChild($objectType . "ID", $qb_userid);
+        $object->addChild($object_type . "ID", $qb_userid);
     }
   }
 

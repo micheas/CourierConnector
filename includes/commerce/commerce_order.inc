@@ -1,27 +1,34 @@
 <?php
+/**
+ * @file
+ * the functions to process a response from quickbooks with commerce.
+ */
 
-//processes a response xml
-function courier_connector_commerce_process_order($responseXml) {
+/**
+ * processes a response xml
+ * @param $response_xml
+ */
+function courier_connector_commerce_process_order($response_xml) {
   require_once 'field_processor.inc';
 
   //write the error to some log if there was one
-  if ($responseXml->ErrorMessage != '') {
+  if ($response_xml->ErrorMessage != '') {
     //handle error
   }
 
-  $objectType = (string) $responseXml->getName();
+  $object_type = (string) $response_xml->getName();
 
   //remove the _Response
-  $objectType = str_replace('_Response', '', $objectType);
+  $object_type = str_replace('_Response', '', $object_type);
 
   $field_config_data = db_query("select field_config_instance.field_name, field_config.type,
                 field_config.module from field_config_instance inner join field_config on field_config.id = field_config_instance.field_id
                 where field_config_instance.bundle = 'commerce_order' and field_config_instance.entity_type = 'commerce_order'")->fetchAllAssoc("field_name");
 
-  $plural = $objectType . 's';
-  $id = $objectType . 'ID';
+  $plural = $object_type . 's';
+  $id = $object_type . 'ID';
 
-  foreach ($responseXml->$plural->$objectType as $quickbooks_order_record) {
+  foreach ($response_xml->$plural->$object_type as $quickbooks_order_record) {
     //check the processed tag, to see what we need to do with this response
     //4 possibles
     //error
@@ -40,7 +47,7 @@ function courier_connector_commerce_process_order($responseXml) {
         //update the record locally to attach the qb id from this add
 
         //try and find a node that has this quickbooks id
-        $orderid = db_query("select entity_id from {field_data_field_quickbooks_id} where bundle = 'commerce_order' and field_quickbooks_id_value = :v", array(":v" => $quickbooks_order_record->$id))->fetchField();
+        $orderid = db_query("SELECT entity_id FROM {field_data_field_quickbooks_id} WHERE bundle = 'commerce_order' AND field_quickbooks_id_value = :v", array(":v" => $quickbooks_order_record->$id))->fetchField();
 
         //check if there is a hard node realtion
         if ($quickbooks_order_record->RelatedID && $quickbooks_order_record->RelatedID != '') {
@@ -81,7 +88,7 @@ function courier_connector_commerce_process_order($responseXml) {
             $orderid = $quickbooks_order_record->RelatedID;
           }
           else {
-            $orderid = db_query("select entity_id from {field_data_field_quickbooks_id} where bundle = 'commerce_order' and field_quickbooks_id_value = :v", array(":v" => $quickbooks_order_record->$id))->fetchField();
+            $orderid = db_query("SELECT entity_id FROM {field_data_field_quickbooks_id} WHERE bundle = 'commerce_order' AND field_quickbooks_id_value = :v", array(":v" => $quickbooks_order_record->$id))->fetchField();
           }
 
           //log the modification
@@ -100,7 +107,7 @@ function courier_connector_commerce_process_order($responseXml) {
             db_insert('courier_transaction_log')
               ->fields(array(
                 'type' => 1,
-                'message' => "Received " . $objectType . " from QuickBooks POS. TransactionNumber ID: " . $quickbooks_order_record->TransactionNumber . " adding order.",
+                'message' => "Received " . $object_type . " from QuickBooks POS. TransactionNumber ID: " . $quickbooks_order_record->TransactionNumber . " adding order.",
                 'status' => "OK"
               ))
               ->execute();
@@ -109,7 +116,7 @@ function courier_connector_commerce_process_order($responseXml) {
 
             try {
               //try and find a node that has this quickbooks id
-              $orderid = db_query("select entity_id from {field_data_field_quickbooks_id} where bundle = 'uc_order' and field_quickbooks_id_value = :v", array(":v" => $quickbooks_order_record->$id))->fetchField();
+              $orderid = db_query("SELECT entity_id FROM {field_data_field_quickbooks_id} WHERE bundle = 'uc_order' AND field_quickbooks_id_value = :v", array(":v" => $quickbooks_order_record->$id))->fetchField();
 
               //check if there is a hard node realtion
               if ($quickbooks_order_record->RelatedID && $quickbooks_order_record->RelatedID != '') {
@@ -131,7 +138,7 @@ function courier_connector_commerce_process_order($responseXml) {
                     $uid = $quickbooks_order_record->RelatedCustomerID;
                   }
                   else {
-                    $uid = db_query("select entity_id from {field_data_field_quickbooks_id} where bundle = 'user' and field_quickbooks_id_value = :v", array(":v" => $quickbooks_order_record->CustomerID))->fetchField();
+                    $uid = db_query("SELECT entity_id FROM {field_data_field_quickbooks_id} WHERE bundle = 'user' AND field_quickbooks_id_value = :v", array(":v" => $quickbooks_order_record->CustomerID))->fetchField();
                   }
 
                   if ($uid == '') {
@@ -147,7 +154,7 @@ function courier_connector_commerce_process_order($responseXml) {
 
               //load data based on the mapping
               //$mapping = courier_ubercart_get_order_mapping();
-              $mapping = db_query("select * from {courier_order_mapping}");
+              $mapping = db_query("SELECT * FROM {courier_order_mapping}");
 
               //get some value from the database
               //be sure to pass the object type value in, so can use mapping based on type from qb
@@ -180,17 +187,17 @@ function courier_connector_commerce_process_order($responseXml) {
               }
 
               //$product_mapping = courier_ubercart_get_product_line_mapping();
-              $product_mapping = db_query("select * from {courier_order_product_mapping}");
+              $product_mapping = db_query("SELECT * FROM {courier_order_product_mapping}");
 
-              $items = $objectType . 'LineItems';
-              $item = $objectType . 'LineItem';
+              $items = $object_type . 'LineItems';
+              $item = $object_type . 'LineItem';
 
               $products = array();
 
               foreach ($quickbooks_order_record->$items->$item as $lineitem) {
                 $uc_order_product = new stdClass();
 
-                $itemid = db_query("select entity_id from {field_data_field_quickbooks_id} where bundle = 'product' and field_quickbooks_id_value = :v", array(":v" => $lineitem->Itemid))->fetchField();
+                $itemid = db_query("SELECT entity_id FROM {field_data_field_quickbooks_id} WHERE bundle = 'product' AND field_quickbooks_id_value = :v", array(":v" => $lineitem->Itemid))->fetchField();
 
                 //map the products
                 foreach ($product_mapping as $map) {
@@ -221,9 +228,9 @@ function courier_connector_commerce_process_order($responseXml) {
 
               uc_order_save($uc_order);
             } catch (Exception $ex) {
-              $errorMessage = $ex->getMessage();
+              $error_message = $ex->getMessage();
 
-              print_r($errorMessage);
+              print_r($error_message);
             }
           }
         }

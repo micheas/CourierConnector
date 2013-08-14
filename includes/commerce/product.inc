@@ -1,6 +1,16 @@
 <?php
+/**
+ * @file
+ * Process a product and put the results in commerce.
+ */
 
+/**
+ * @param $response_xml
+ * @param string $product_type
+ */
 function courier_connector_commerce_process_product($response_xml, $product_type = 'product') {
+
+  $debug = FALSE;
   require_once 'field_processor.inc';
 
   $response_name = (string) $response_xml->getName();
@@ -36,7 +46,7 @@ function courier_connector_commerce_process_product($response_xml, $product_type
         // update the record locally to attach the qb id from this add
 
         // try and find a node that has this quickbooks id (?shouldn't this only be true in ubercart??)
-        $entity_id = db_query("select entity_id from {field_data_field_quickbooks_id} where entity_type = 'commerce_product' and field_quickbooks_id_value = :v", array(":v" => (string) $quickbooks_item_record->ItemInventoryID))->fetchField();
+        $entity_id = db_query("SELECT entity_id FROM {field_data_field_quickbooks_id} WHERE entity_type = 'commerce_product' AND field_quickbooks_id_value = :v", array(":v" => (string) $quickbooks_item_record->ItemInventoryID))->fetchField();
 
         //check if there is a hard node relation
         if ($quickbooks_item_record->RelatedID && $quickbooks_item_record->RelatedID != '') {
@@ -72,7 +82,7 @@ function courier_connector_commerce_process_product($response_xml, $product_type
             $itemid = $quickbooks_item_record->RelatedID;
           }
           else {
-            $itemid = db_query("select entity_id from {field_data_field_quickbooks_id} where bundle = 'product' and field_quickbooks_id_value = :v", array(":v" => $quickbooks_item_record->$id))->fetchField();
+            $itemid = db_query("SELECT entity_id FROM {field_data_field_quickbooks_id} WHERE bundle = 'product' AND field_quickbooks_id_value = :v", array(":v" => $quickbooks_item_record->$id))->fetchField();
           }
 
           //log the modification
@@ -89,13 +99,13 @@ function courier_connector_commerce_process_product($response_xml, $product_type
           if ($quickbooks_item_record->Processed == "read") {
             try {
               //try and find a node that has this quickbooks id
-              $entity_id = db_query("select entity_id from {field_data_field_quickbooks_id} where entity_type = 'commerce_product' and field_quickbooks_id_value = :v", array(":v" => (string) $quickbooks_item_record->ItemInventoryID))->fetchField();
+              $entity_id = db_query("SELECT entity_id FROM {field_data_field_quickbooks_id} WHERE entity_type = 'commerce_product' AND field_quickbooks_id_value = :v", array(":v" => (string) $quickbooks_item_record->ItemInventoryID))->fetchField();
 
               if (isset($quickbooks_item_record->RelatedID) && trim((string) $quickbooks_item_record->RelatedID) != '') {
                 $commerce_product_record = commerce_product_load($quickbooks_item_record->RelatedID);
 
                 if (!$commerce_product_record) {
-                   watchdog('courier connector', $response_xml->ErrorMessage, array(), WATCHDOG_ERROR );
+                  watchdog('courier connector', $response_xml->ErrorMessage, array(), WATCHDOG_ERROR);
                 }
                 else {
                   //log the read
@@ -127,7 +137,7 @@ function courier_connector_commerce_process_product($response_xml, $product_type
                   }
                 }
                 else {
-                  if ($sku_field = courier_connector_map_value($object_type . "_response", "sku", $quickbooks_item_record)) {
+                  if ($sku_field === courier_connector_map_value($object_type . "_response", "sku", $quickbooks_item_record)) {
                     //try and do an auto relation base on the sku value
 
                     $commerce_product_record = commerce_product_load_by_sku($sku_field);
@@ -166,8 +176,16 @@ function courier_connector_commerce_process_product($response_xml, $product_type
 
               foreach ($field_config_data as $field => $value) {
                 $new_field_value = courier_connector_map_value($object_type . "_response", $field, $quickbooks_item_record);
-
-                $commerce_product_record->$field = courier_connector_process_field($new_field_value, $field, $value->type);
+                $field_value = courier_connector_process_field($new_field_value, $field, $value->type);
+                if ($debug === TRUE) {
+                  watchdog('Quickbooks import', '$field_value = ' . print_r($field_value, TRUE), array(), WATCHDOG_DEBUG);
+                }
+                if ($field_value == NULL || $field_value == '') {
+                  $commerce_product_record->$field = array();
+                }
+                else {
+                  $commerce_product_record->$field = $field_value;
+                }
               }
 
               //These values are ever present so not found in the field config
@@ -182,12 +200,12 @@ function courier_connector_commerce_process_product($response_xml, $product_type
                 $commerce_product_record->field_quickbooks_id['und'][0]['value'] = (string) $quickbooks_item_record->ItemInventoryID;
               }
               $commerce_product_record->uid = 0;
-              $result = commerce_product_save($commerce_product_record);
+              commerce_product_save($commerce_product_record);
 
               //echo $result;
             } catch (Exception $ex) {
-              $errorMessage = print_r($ex->getMessage(), TRUE);
-              watchdog('courier connector', $errorMessage, array(), WATCHDOG_ERROR );
+              $error_message = print_r($ex->getMessage(), TRUE);
+              watchdog('courier connector', $error_message, array(), WATCHDOG_ERROR );
             }
           }
         }

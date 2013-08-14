@@ -1,8 +1,15 @@
 <?php
+/**
+ * @file update the category.
+ */
 
-function courier_get_categories($xmlParser) {
+/**
+ * @param $xml_parser
+ * @return string
+ */
+function courier_get_categories($xml_parser) {
   //$vid = db_result(db_query("select vid from vocabulary where module = 'uc_catalog'"));
-  db_query("select vid from taxonomy_vocabulary where module = 'uc_catalog'")->fetchField();
+  db_query("select vid from {taxonomy_vocabulary} where module = 'uc_catalog'")->fetchField();
 
   $taxonomy = taxonomy_get_tree($vid);
 
@@ -19,8 +26,8 @@ function courier_get_categories($xmlParser) {
     $categories .= 'name = "' . $category->name . '" ';
     $categories .= 'catalogID = "' . $vid . '" ';
     $categories .= '><CategoryParents>';
-    foreach ($category->parents as $parentID) {
-      $categories .= '<Parent tid = "' . $parentID . '" />';
+    foreach ($category->parents as $parent_id) {
+      $categories .= '<Parent tid = "' . $parent_id . '" />';
     }
 
     $categories .= '</CategoryParents>';
@@ -34,32 +41,32 @@ function courier_get_categories($xmlParser) {
 }
 
 //update the Categories from the provided information
-function courier_update_categories($xmlParser) {
+function courier_update_categories($xml_parser) {
   $status = "";
-  $errorMessage = "";
-  $warningMessage = "";
+  $error_message = "";
+  $warning_message = "";
 
-  $idList = array();
-  $parentList = array();
+  $id_list = array();
+  $parent_list = array();
 
-  foreach ($xmlParser->output[0][child] as $categoryNode) {
+  foreach ($xml_parser->output[0]['child'] as $category_node) {
     try {
-      $termData = array();
+      $term_data = array();
 
       //set the explicitly set id
-      if (isset($categoryNode['attrs']['CATALOGID']) && $categoryNode['attrs']['CATALOGID'] != "") {
-        $termData['vid'] = $categoryNode['attrs']['CATALOGID'];
+      if (isset($category_node['attrs']['CATALOGID']) && $category_node['attrs']['CATALOGID'] != "") {
+        $term_data['vid'] = $category_node['attrs']['CATALOGID'];
       }
       else {
-        if (isset($categoryNode['attrs']['CATALOG_NAME']) && $categoryNode['attrs']['CATALOG_NAME'] != "") {
+        if (isset($category_node['attrs']['CATALOG_NAME']) && $category_node['attrs']['CATALOG_NAME'] != "") {
           //find the id from the name specified
           //$termData['vid'] = db_result(db_query("select vid from vocabulary where module = 'uc_catalog' and name = '%s'", $categoryNode['attrs']['CATALOG_NAME']));
-          $termData['vid'] = db_query("select vid from taxonomy_vocabulary where module = 'uc_catalog' and name = :name", array(":name" => $categoryNode['attrs']['CATALOG_NAME']))->fetchField();
+          $term_data['vid'] = db_query("select vid from {taxonomy_vocabulary} where module = 'uc_catalog' and name = :name", array(":name" => $category_node['attrs']['CATALOG_NAME']))->fetchField();
         }
       }
 
-      if (isset($categoryNode['attrs']['NAME']) && $categoryNode['attrs']['NAME'] != "") {
-        $termData['name'] = $categoryNode['attrs']['NAME'];
+      if (isset($category_node['attrs']['NAME']) && $category_node['attrs']['NAME'] != "") {
+        $term_data['name'] = $category_node['attrs']['NAME'];
       }
 
       //if(isset($categoryNode['attrs']['DESCRIPTION']) && $categoryNode['attrs']['DESCRIPTION'] != "")
@@ -73,15 +80,15 @@ function courier_update_categories($xmlParser) {
       //}
 
       //set the parent taxonomy
-      foreach ($categoryNode['child'] as $parentRecord) {
-        if (isset($parentRecord['attrs']['PARENTID']) && $parentRecord['attrs']['PARENTID'] != "") {
+      foreach ($category_node['child'] as $parent_record) {
+        if (isset($parent_record['attrs']['PARENTID']) && $parent_record['attrs']['PARENTID'] != "") {
           //set the parent id
-          $termData['parent'] = array($parentRecord['attrs']['PARENTID']);
+          $term_data['parent'] = array($parent_record['attrs']['PARENTID']);
         }
         else {
-          if (isset($parentRecord['attrs']['PARENTNAME']) && $parentRecord['attrs']['PARENTNAME'] != "") {
+          if (isset($parent_record['attrs']['PARENTNAME']) && $parent_record['attrs']['PARENTNAME'] != "") {
             //need to find the taxonomy for this data, the name is presented Parent:parent:parent:category
-            $parentNames = split(":", $parentRecord['attrs']['PARENTNAME']);
+            $parent_names = split(":", $parent_record['attrs']['PARENTNAME']);
 
             //    if(sizeof($parentNames > 0))
             //    {
@@ -117,37 +124,37 @@ function courier_update_categories($xmlParser) {
             //    }
 
             //will work for now, but not fool proof, just takes the +1 parent and finds its id
-            if (sizeof($parentNames > 1)) {
+            if (sizeof($parent_names > 1)) {
               //return $parentNames[sizeof($parentNames) - 2];
 
-              $term = taxonomy_get_term_by_name($parentNames[sizeof($parentNames) - 2]);
+              $term = taxonomy_get_term_by_name($parent_names[sizeof($parent_names) - 2]);
 
-              $termData['parent'] = array($term[0]->tid);
+              $term_data['parent'] = array($term[0]->tid);
             }
           }
         }
       }
 
-      $term = (object) $termData;
+      $term = (object) $term_data;
       taxonomy_term_save($term);
 
       //save the relation data
-      $idList[$categoryNode['attrs']['DATAID']] = $term->tid;
+      $id_list[$category_node['attrs']['DATAID']] = $term->tid;
     } catch (Exception $ex) {
-      $errorMessage .= $ex->getMessage();
+      $error_message .= $ex->getMessage();
     }
   }
 
   //return the error message if one exists
-  if ($errorMessage != "") {
+  if ($error_message != "") {
     $status = "<CategoryUpdateResult Status = \"Error\">";
-    $status .= "<Error Message=\"" . $errorMessage . "\" />";
+    $status .= "<Error Message=\"" . $error_message . "\" />";
   }
   else {
     //check if there is any warnings
-    if ($warningMessage != "") {
+    if ($warning_message != "") {
       $status = "<CategoryUpdateResult Status = \"Warnings\">";
-      $status .= "<Warning Message=\"" . $warningMessage . "\" />";
+      $status .= "<Warning Message=\"" . $warning_message . "\" />";
     }
     else {
       //no errors or warnings mark that status
@@ -155,7 +162,7 @@ function courier_update_categories($xmlParser) {
     }
 
     //generate a return message
-    foreach ($idList as $dataid => $id) {
+    foreach ($id_list as $dataid => $id) {
       $status .= "<Category ID=\"" . $id . "\" DataID = \"" . $dataid . "\" />";
     }
   }

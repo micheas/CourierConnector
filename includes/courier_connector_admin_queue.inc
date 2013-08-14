@@ -1,8 +1,9 @@
 <?php
+/**
+ * @file
+ * The admin section for courier.
+ */
 
-function courier_connector_queue_form_6(&$form_state) {
-  courier_connector_queue_form($form_state, NULL);
-}
 
 /**
  * Builds the conifg form.
@@ -20,7 +21,7 @@ function courier_connector_queue_form($form, &$form_state) {
     '#tree' => TRUE,
   );
 
-  $result = db_query("select * from courier_requests where processed != 1");
+  $result = db_query("SELECT * FROM {courier_requests} WHERE processed <> 1");
 
   foreach ($result as $row) {
     $form['current_requests']['job_date'][$row->job_id] = array('#markup' => check_plain($row->job_date));
@@ -45,13 +46,6 @@ function courier_connector_queue_form($form, &$form_state) {
     '#group' => 'courier-requests',
     '#weight' => -1,
   );
-
-//    $form['submit_request']['request_type'] = array(
-//      '#type' => 'select',
-//      '#title' => t('Request Type'),
-//      '#default_value' => t('read'),
-//      '#options' => array("read" => "Read Request", "write" => "Write Request"),       
-//    ); 
 
   $form['submit_read_request']['request_method'] = array(
     '#type' => 'select',
@@ -79,24 +73,6 @@ function courier_connector_queue_form($form, &$form_state) {
     '#size' => 20,
     '#description' => t('Format the date as 1/1/2001 HH:MM:SS or just 1/1/2001'),
   );
-
-//  $form['submit_read_request']['to_date'] = array(
-//    '#type' => 'textfield',
-//    '#title' => t('To Time Modified'),
-//    '#default_value' => t(''), 
-//    '#size' => 20,
-//    '#description' => t('Format the date as 1/1/2001 HH:MM:SS or just 1/1/2001'),
-//  ); 
-
-//  $form['submit_read_request']['active'] = array(
-//    '#type' => 'select',
-//    '#title' => t('Active Status'),
-//    '#default_value' => t(''),
-//    '#options' => array("" => "Any",
-//                        "true" => "Active Only",
-//                        "false" => "Deactive Only",                                            
-//                       ),      
-//  ); 
 
   $form['submit_read_request']['ids'] = array(
     '#type' => 'textfield',
@@ -146,22 +122,6 @@ function courier_connector_queue_form($form, &$form_state) {
     '#tree' => TRUE,
   );
 
-  //$result = db_query("select order_id, order_total, created, order_status, concat(billing_first_name, ' ', billing_last_name) as customer from uc_orders");
-
-//  $d = array();
-//
-//  foreach ($result as $row) 
-//  {                   
-//      $form['submit_write_order_request']['orders']['add'][$row->order_id] = array(    
-//                                                                                      '#type' => 'checkbox',                                                                                            
-//                                                                                  );
-//      $form['submit_write_order_request']['orders']['order_id'][$row->order_id] = array('#markup' => check_plain($row->order_id));
-//      $form['submit_write_order_request']['orders']['customer'][$row->order_id] = array('#markup' => check_plain($row->customer));                                                        
-//      $form['submit_write_order_request']['orders']['total'][$row->order_id] = array('#markup' => check_plain($row->order_total));
-//      $form['submit_write_order_request']['orders']['purchase_date'][$row->order_id] = array('#markup' => check_plain(gmdate("M d Y H:i:s", $row->created)));
-//      $form['submit_write_order_request']['orders']['status'][$row->order_id] = array('#markup' => check_plain($row->order_status));
-//  }
-
   $form['submit_write_order_request']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit Request to Queue'),
@@ -207,21 +167,6 @@ function courier_connector_queue_form($form, &$form_state) {
     '#tree' => TRUE,
   );
 
-//  $result = db_query("select uc_products.nid, title, `sell_price`, `model` from uc_products inner join node on node.nid = uc_products.nid");
-//
-//  $d = array();
-//
-//  foreach ($result as $row) 
-//  {                   
-//      $form['submit_write_product_request']['products']['add'][$row->nid] = array(    
-//                                                                                      '#type' => 'checkbox',                                                                                            
-//                                                                                  );
-//      $form['submit_write_product_request']['products']['nid'][$row->nid] = array('#markup' => check_plain($row->nid));
-//      $form['submit_write_product_request']['products']['title'][$row->nid] = array('#markup' => check_plain($row->title));                                                        
-//      $form['submit_write_product_request']['products']['sell_price'][$row->nid] = array('#markup' => check_plain($row->sell_price));
-//      $form['submit_write_product_request']['products']['model'][$row->nid] = array('#markup' => check_plain($row->model));       
-//  }
-
   $form['submit_write_product_request']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit Request to Queue'),
@@ -242,21 +187,6 @@ function courier_connector_queue_form($form, &$form_state) {
     '#tree' => TRUE,
   );
 
-//  $result = db_query("select distinct users.uid, concat(uc_orders.billing_first_name, ' ', uc_orders.billing_last_name) as name, mail, concat(billing_city, ', ', uc_zones.zone_name) as location from users inner join uc_orders on uc_orders.uid = users.uid inner join uc_zones on uc_orders.billing_zone = uc_zones.zone_id");
-//
-//  $d = array();
-//
-//  foreach ($result as $row) 
-//  {                   
-//      $form['submit_write_customer_request']['customers']['add'][$row->uid] = array(    
-//                                                                                      '#type' => 'checkbox',                                                                                            
-//                                                                                  );
-//      $form['submit_write_customer_request']['customers']['uid'][$row->uid] = array('#markup' => check_plain($row->uid));
-//      $form['submit_write_customer_request']['customers']['name'][$row->uid] = array('#markup' => check_plain($row->name));                                                        
-//      $form['submit_write_customer_request']['customers']['email'][$row->uid] = array('#markup' => check_plain($row->mail));
-//      $form['submit_write_customer_request']['customers']['location'][$row->uid] = array('#markup' => check_plain($row->location));        
-//  }
-
   $form['submit_write_customer_request']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit Request to Queue'),
@@ -274,6 +204,11 @@ function courier_connector_queue_validate(&$form_state) {
 
 }
 
+/**
+ * Should probably be renamed courier_connector_order_table().
+ * @param $variables
+ * @return string
+ */
 function theme_courier_connector_order_table($variables) {
   $form_state = $variables['form'];
 
@@ -301,6 +236,10 @@ function theme_courier_connector_order_table($variables) {
   return $output;
 }
 
+/**
+ * @param $variables
+ * @return string
+ */
 function theme_courier_connector_product_table($variables) {
   $form_state = $variables['form'];
 
@@ -327,6 +266,10 @@ function theme_courier_connector_product_table($variables) {
   return $output;
 }
 
+/**
+ * @param $variables
+ * @return string
+ */
 function theme_courier_connector_customer_table($variables) {
   $form_state = $variables['form'];
 
@@ -353,6 +296,10 @@ function theme_courier_connector_customer_table($variables) {
   return $output;
 }
 
+/**
+ * @param $variables
+ * @return string
+ */
 function theme_courier_connector_request_table($variables) {
   $form_state = $variables['form'];
 
@@ -378,34 +325,9 @@ function theme_courier_connector_request_table($variables) {
   return $output;
 }
 
-//
-//function theme_courier_connector_request_log_table($variables) 
-//{     
-//   $form_state = $variables['form'];
-//
-//   $header = array(t('Request Date'), t('Request XML'), t('Processed Date'), t('Response XML'), t('Status'));
-//
-//   $rows = array();
-//
-//   foreach (element_children($form_state['job_date']) as $key) {
-//      $rows[] = array(
-//        drupal_render($form_state['job_date'][$key]),
-//        drupal_render($form_state['request_xml'][$key]),               
-//        drupal_render($form_state['processed_date'][$key]),
-//        drupal_render($form_state['response_xml'][$key]),        
-//        drupal_render($form_state['status'][$key])
-//
-//      );       
-//    } 
-//
-//    $output = theme('table', array(
-//        'header' => $header,
-//        'rows' => $rows
-//    ));
-//
-//    return $output;
-//}
-
+/**
+ * Implements hook_form_submit().
+ */
 function courier_connector_queue_form_submit(&$form_state) {
   db_insert('courier_requests')
     ->fields(array(
@@ -416,26 +338,14 @@ function courier_connector_queue_form_submit(&$form_state) {
     ->execute();
 
   switch ($form_state_state['values']['courier-requests__active_tab']) {
-    case "edit-submit-read-request":
-    {
-//            drupal_goto("courier/generate_request", array('query'=> array(
-//                                                            "request_type" => "read",
-//                                                            "request_method" => $form_state_state['values']['request_method'],
-//                                                            "parameters" => "{$form_state_state['values']['from_date']}~{$form_state_state['values']['to_date']}~{$form_state_state['values']['active']}~{$form_state_state['values']['ids']}~{$form_state_state['values']['fullnames']}"
-//                                                         )));
-      //courier_connector_generate_read_request($form_state_state['values']['request_method'], "{$form_state_state['values']['from_date']}~{$form_state_state['values']['to_date']}~{$form_state_state['values']['active']}~{$form_state_state['values']['ids']}~{$form_state_state['values']['fullnames']}");
+    case "edit-submit-read-request": {
+
       $request_data = array();
 
       $request_data['TimeModified'] = $form_state_state['values']['from_date'];
       //$request_data['ToTimeModified'] = $form_state_state['values']['to_date'];
       $request_data['Desc1'] = $form_state_state['values']['desc1'];
       $request_data[$form_state_state['values']['request_method'] . 'ID'] = $form_state_state['values']['ids'];
-      //$request_data['ActiveStatus'] = $form_state_state['values']['active'];
-      //$request_data[$form_state_state['values']['request_method'] . 'IDs']['key'] =$form_state_state['values']['request_method'] . 'ID';
-      //$request_data[$form_state_state['values']['request_method'] . 'IDs'] = array_merge($request_data[$form_state_state['values']['request_method'] . 'IDs'], explode(',', $form_state_state['values']['ids']));
-      //$request_data['FullNames']['key'] = 'FullName';
-      //$request_data['FullNames'] = array_merge($request_data['FullNames'], explode(',', $form_state_state['values']['fullnames']));
-
 
       db_insert('courier_requests')
         ->fields(array(
@@ -446,8 +356,7 @@ function courier_connector_queue_form_submit(&$form_state) {
         ->execute();
       break;
     }
-    case "edit-submit-write-order-request":
-    {
+    case "edit-submit-write-order-request": {
       $orderids = '';
 
       foreach ($form_state_state['values']['orders']['add'] as $orderid => $add) {
@@ -456,20 +365,12 @@ function courier_connector_queue_form_submit(&$form_state) {
         }
       }
 
-//            drupal_goto("courier/generate_request", array('query'=> array(
-//                                                            "request_type" => "write",
-//                                                            "request_method" => $form_state_state['values']['order_type'],
-//                                                            "parameters" => $orderids
-//                                                         )));
       break;
     }
-    case "edit-submit-write-payment-request":
-    {
-
+    case "edit-submit-write-payment-request": {
       break;
     }
-    case "edit-submit-write-product-request":
-    {
+    case "edit-submit-write-product-request": {
       $productids = '';
 
       foreach ($form_state_state['values']['products']['add'] as $productid => $add) {
@@ -478,15 +379,9 @@ function courier_connector_queue_form_submit(&$form_state) {
         }
       }
 
-//            drupal_goto("courier/generate_request", array('query'=> array(
-//                                                            "request_type" => "write",
-//                                                            "request_method" => $form_state_state['values']['product_type'],
-//                                                            "parameters" => $productids
-//                                                         )));
       break;
     }
-    case "edit-submit-write-customer-request":
-    {
+    case "edit-submit-write-customer-request": {
       $customerids = '';
 
       foreach ($form_state_state['values']['customers']['add'] as $customerid => $add) {
@@ -495,11 +390,6 @@ function courier_connector_queue_form_submit(&$form_state) {
         }
       }
 
-//            drupal_goto("courier/generate_request", array('query'=> array(
-//                                                            "request_type" => "write",
-//                                                            "request_method" => "Customer",
-//                                                            "parameters" => $customerids
-//                                                         )));
       break;
     }
   }

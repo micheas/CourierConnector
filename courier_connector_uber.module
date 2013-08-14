@@ -3,7 +3,7 @@
 require_once 'includes/courier_connector_misc.inc';
 define('COURIER_CONNECTOR_CART', 'ubercart');
 
-function courier_connector_uber_7_menu() {
+function courier_connector_uber_menu() {
   return get_courier_menu();
 }
 
@@ -12,44 +12,44 @@ function courier_connector_rules_action_info() {
   return get_courier_connector_rules_action_info();
 }
 
-function courier_connector_uber_7_read_items($from_date) {
+function courier_connector_uber_read_items($from_date) {
 
 }
 
-function courier_connector_uber_7_read_customers($from_date) {
+function courier_connector_uber_read_customers($from_date) {
 
 }
 
-function courier_connector_uber_7_download_items($from_date) {
+function courier_connector_uber_download_items($from_date) {
 
 }
 
 /**
  * Implements hook_services_resources().
  */
-function courier_connector_uber_7_services_resources() {
+function courier_connector_uber_services_resources() {
   return get_courier_connector_services_resources();
 }
 
 /**
  * implementation of hook_rest_server_request_parsers_alter()
  */
-function courier_connector_uber_7_rest_server_request_parsers_alter(&$parsers) {
+function courier_connector_uber_rest_server_request_parsers_alter(&$parsers) {
   get_courier_connector_rest_server_request_parsers_alter($parsers);
 }
 
 
-function courier_connector_uber_7_rest_server_response_formatters_alter(&$formatters) {
+function courier_connector_uber_rest_server_response_formatters_alter(&$formatters) {
   get_courier_connector_rest_server_response_formatters_alter($formatters);
 }
 
 /**
  * Implements hook_permission().
  */
-function courier_connector_uber_7_permission() {
+function courier_connector_uber_permission() {
   return get_courier_connector_permission();
 }
 
-function courier_connector_uber_7_theme($existing, $type, $theme, $path) {
+function courier_connector_uber_theme($existing, $type, $theme, $path) {
   return get_courier_connector_theme($existing, $type, $theme, $path);
 }

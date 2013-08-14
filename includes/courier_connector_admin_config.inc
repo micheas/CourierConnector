@@ -5,10 +5,6 @@
  * Administrative callbacks for the courier quickbooks module.
  */
 
-function courier_connector_config_form_6(&$form_state) {
-  return courier_connector_config_form($form, NULL);
-}
-
 /**
  * Builds the conifg form.
  */

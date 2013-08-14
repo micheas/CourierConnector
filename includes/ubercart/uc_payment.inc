@@ -1,18 +1,25 @@
 <?php
+/**
+ * @file The ubercart payment bridge
+ */
 
-function courier_ubercart_process_payment($objectType, $responseXml) {
+/**
+ * @param $object_type
+ * @param $response_xml
+ */
+function courier_ubercart_process_payment($object_type, $response_xml) {
   //write the error to some log if there was one
-  if ($responseXml->ErrorMessage != '') {
+  if ($response_xml->ErrorMessage != '') {
     //handle error
   }
 
   print_r(uc_payment_load(1));
   exit;
 
-  $plural = $objectType . 's';
-  $id = $objectType . 'ID';
+  $plural = $object_type . 's';
+  $id = $object_type . 'ID';
 
-  foreach ($responseXml->$plural->$objectType as $payment) {
+  foreach ($response_xml->$plural->$object_type as $payment) {
     $uc_payment = NULL;
 
     try {
@@ -65,9 +72,9 @@ function courier_ubercart_process_payment($objectType, $responseXml) {
 
 
     } catch (Exception $ex) {
-      $errorMessage = $ex->getMessage();
+      $error_message = $ex->getMessage();
 
-      print_r($errorMessage);
+      print_r($error_message);
     }
   }
 }

@@ -1,5 +1,15 @@
 <?php
+/**
+ * @file
+ * Converts a paramaters to an array.
+ */
 
+/**
+ * @param $value
+ * @param $field_name
+ * @param $parameters
+ * @return array
+ */
 function courier_connector_command_explode($value, $field_name, $parameters) {
   $parameters = explode(',', $parameters);
 

@@ -1,5 +1,13 @@
 <?php
+/**
+ * @file
+ * Extensions to services, in D8 this will need to integrate with WHSKY.
+ */
 
+
+/**
+ * {@inheritdoc}
+ */
 class CourierXMLResponseParser extends RESTServer {
   public static function parseXML($handle) {
 
@@ -17,7 +25,9 @@ class CourierXMLResponseParser extends RESTServer {
   }
 
 }
-
+/**
+ * {@inheritdoc}
+ */
 class RESTServerViewCourier extends RESTServerView {
   public function render() {
     $doc = new DOMDocument('1.0', 'utf-8');
@@ -29,6 +39,11 @@ class RESTServerViewCourier extends RESTServerView {
     return $doc->saveXML();
   }
 
+  /**
+   * @param $doc
+   * @param $parent
+   * @param $data
+   */
   private function xml_recurse(&$doc, &$parent, $data) {
     if (is_object($data)) {
       $data = get_object_vars($data);
@@ -38,7 +53,7 @@ class RESTServerViewCourier extends RESTServerView {
       $assoc = FALSE || empty($data);
       $k = '';
       if (array_key_exists('key', $data)) {
-        if(!isset($value)){
+        if (!isset($value)) {
           $value = '';
         }
         $k = $value;

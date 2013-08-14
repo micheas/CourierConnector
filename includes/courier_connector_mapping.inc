@@ -1,7 +1,17 @@
 <?php
+/**
+ * @file
+ * Do the field mapping.
+ */
 
-//get a list of fields that have been mapped, this will be iterated to do the assignment
+/**
+ * get a list of fields that have been mapped, this will be iterated to do the assignment
+ * @param $type
+ * @param null $filter
+ * @return array
+ */
 function courier_connector_get_mapped_field_list($type, $filter = NULL) {
+
 
   $query = db_select("courier_mapping_to_{$type}", "map_to");
   $query->fields("map_to", array("to_field"));
@@ -20,6 +30,12 @@ function courier_connector_get_mapped_field_list($type, $filter = NULL) {
   return $ret;
 }
 
+/**
+ * @param $type
+ * @param $to_field
+ * @param $record
+ * @return bool|string
+ */
 function courier_connector_map_value($type, $to_field, $record) {
 
   $mapped_fields = array();
@@ -33,19 +49,20 @@ function courier_connector_map_value($type, $to_field, $record) {
 
   $mapped_fields = $query->execute();
 
+
   $return_value = FALSE;
 
   foreach ($mapped_fields as $mapped_field) {
     $mapped_field = (array) $mapped_field;
 
-    //process the logic according to the mapping          
+    // Process the logic according to the mapping.
 
     $from_field = $mapped_field['from_field'];
 
     if (isset($from_field)) {
       $from_value = courier_connector_get_value($record, $from_field);
 
-      //check if the field specifed is null    
+      // check if the field specified is null.
       if ($from_value == '') {
         $from_alternative = $mapped_field['from_alternative'];
         //$from_alternative_value = (string) trim($record->$from_alternative);
@@ -76,6 +93,11 @@ function courier_connector_map_value($type, $to_field, $record) {
   return $return_value;
 }
 
+/**
+ * @param $record
+ * @param $field_name
+ * @return array|bool|string
+ */
 function courier_connector_get_value($record, $field_name) {
   if (is_object($record)) {
     $record = get_object_vars($record);
@@ -117,13 +139,13 @@ function courier_connector_get_value($record, $field_name) {
 //ADD IN ACTIVE COMMAND, to mapping, if active is false ignore the mapping, dont push any value
 
 
-/*
+/**
  * Process the record against a list of commands
  */
 function courier_connector_process_commands($record, $field_value, $field_name, $commands) {
 
   if (isset($commands)) {
-    //break the commands into the individual ones 
+    // Break the commands into the individual commands.
 
     $command_list = explode('|', $commands);
 

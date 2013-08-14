@@ -1,11 +1,19 @@
 <?php
+/**
+ * @file
+ * The functions to process the responses.
+ */
 
-//the function getting called that will execute the update
+/**
+ * the function getting called that will execute the update
+ * @param $job_id
+ * @return string
+ */
 function courier_connector_process_response($job_id) {
   require_once "courier_connector_mapping.inc";
   require_once "courier_connector_misc.inc";
 
-  $response_parameters = file_get_contents(drupal_get_path('module', 'courier_connector_commerce_7') . "/includes/" . "response_parameters.json");
+  $response_parameters = file_get_contents(drupal_get_path('module', 'courier_connector_commerce') . "/includes/" . "response_parameters.json");
   $response_parameters = json_decode($response_parameters, TRUE);
 
   $query = db_select("courier_responses");

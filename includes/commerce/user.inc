@@ -1,20 +1,27 @@
 <?php
+/**
+ * @file
+ * Process customer profiles.
+ */
 
-function courier_connector_commerce_process_user($responseXml) {
+/**
+ * @param $response_xml
+ */
+function courier_connector_commerce_process_user($response_xml) {
   require_once 'field_processor.inc';
 
   //write the error to some log if there was one
-  if ($responseXml->ErrorMessage != '') {
+  if ($response_xml->ErrorMessage != '') {
     //handle error
   }
 
-  $objectType = (string) $responseXml->getName();
+  $object_type = (string) $response_xml->getName();
 
   //remove the _Response
-  $objectType = str_replace('_Response', '', $objectType);
+  $object_type = str_replace('_Response', '', $object_type);
 
-  $plural = $objectType . 's';
-  $id = $objectType . 'ID';
+  $plural = $object_type . 's';
+  $id = $object_type . 'ID';
 
   // This should be rewritten so it can deal with table prefixes.
   $field_config_data = db_query("select field_config_instance.field_name, field_config.type,
@@ -22,7 +29,7 @@ function courier_connector_commerce_process_user($responseXml) {
           where field_config_instance.bundle = 'billing' and field_config_instance.entity_type = 'commerce_customer_profile'")->fetchAllAssoc("field_name");
 
 
-  foreach ($responseXml->$plural->$objectType as $user) {
+  foreach ($response_xml->$plural->$object_type as $user) {
     //check the processed tag, to see what we need to do with this response
     //4 possibles
     //error
@@ -34,23 +41,21 @@ function courier_connector_commerce_process_user($responseXml) {
       //was already logged
 
     }
-    else if ($user->Processed == "added") {
+    elseif ($user->Processed == "added") {
       //this is just a response that the record in qb was added
 
       //update the record locally to attach the qb id from this add
 
       //try and find a node that has this quickbooks id
-      $uid = db_query("select entity_id from {field_data_field_quickbooks_id} where bundle = 'user' and field_quickbooks_id_value = :v", array(":v" => $user->$id))->fetchField();
+      $uid = db_query("SELECT entity_id FROM {field_data_field_quickbooks_id} WHERE bundle = 'user' AND field_quickbooks_id_value = :v", array(":v" => $user->$id))->fetchField();
 
       //check if there is a hard node realtion
       if ($user->RelatedID && $user->RelatedID != '') {
         $usr = user_load((string) $user->RelatedID);
       }
-      else {
-        if ($uid != '') {
-          //load from the quickbooks related id
-          $usr = user_load($uid);
-        }
+      elseif ($uid != '') {
+        //load from the quickbooks related id
+        $usr = user_load($uid);
       }
 
       $usr->language = LANGUAGE_NONE;
@@ -79,17 +84,17 @@ function courier_connector_commerce_process_user($responseXml) {
         //
         //check if there is a hard node realtion
         if ($user->RelatedID && $user->RelatedID != '') {
-          $userid = $user->RelatedID;
+          $user_id = $user->RelatedID;
         }
         else {
-          $userid = db_query("select entity_id from {field_data_field_quickbooks_id} where bundle = 'user' and field_quickbooks_id_value = :v", array(":v" => $user->$id))->fetchField();
+          $user_id = db_query("SELECT entity_id FROM {field_data_field_quickbooks_id} WHERE bundle = 'user' AND field_quickbooks_id_value = :v", array(":v" => $user->$id))->fetchField();
         }
 
         //log the modification
         db_insert('courier_transaction_log')
           ->fields(array(
             'type' => 1,
-            'message' => "Customer update sent to QuickBooks, Customer ID: " . $userid,
+            'message' => "Customer update sent to QuickBooks, Customer ID: " . $user_id,
             'status' => "OK"
           ))
           ->execute();
@@ -111,7 +116,7 @@ function courier_connector_commerce_process_user($responseXml) {
 
           try {
             //try and find a node that has this quickbooks id
-            $userid = db_query("select entity_id from {field_data_field_quickbooks_id} where bundle = 'user' and field_quickbooks_id_value = :v", array(":v" => $user->$id))->fetchField();
+            $user_id = db_query("SELECT entity_id FROM {field_data_field_quickbooks_id} WHERE bundle = 'user' AND field_quickbooks_id_value = :v", array(":v" => $user->$id))->fetchField();
 
             //check if there is a hard node realtion
             if ($user->RelatedID && $user->RelatedID != '') {
@@ -119,9 +124,9 @@ function courier_connector_commerce_process_user($responseXml) {
               $customer = user_load((string) $user->RelatedID);
             }
             else {
-              if ($userid != '') {
+              if ($user_id != '') {
                 //use the paymentid
-                $customer = user_load($userid);
+                $customer = user_load($user_id);
               }
               else {
                 //new record
@@ -139,7 +144,7 @@ function courier_connector_commerce_process_user($responseXml) {
             foreach ($field_config_data as $field => $value) {
               //this is the stock field that is more of a place holder, these fields dont change
               if ($field == "commerce_customer_address") {
-                $new_field_value = courier_connector_map_value($objectType . "_response", "commerce_customer_address_country", $user);
+                $new_field_value = courier_connector_map_value($object_type . "_response", "commerce_customer_address_country", $user);
                 $edit->$field = courier_connector_process_field($new_field_value, "commerce_customer_address_country", $value->type);
 
 //                      "commerce_customer_address_country"
@@ -157,7 +162,7 @@ function courier_connector_commerce_process_user($responseXml) {
 //                      "commerce_customer_address_last_name"
               }
               else {
-                $new_field_value = courier_connector_map_value($objectType . "_response", $field, $user);
+                $new_field_value = courier_connector_map_value($object_type . "_response", $field, $user);
                 $edit->$field = courier_connector_process_field($new_field_value, $field, $value->type);
               }
             }
@@ -196,9 +201,9 @@ function courier_connector_commerce_process_user($responseXml) {
 
             user_save($customer, $edit);
           } catch (Exception $ex) {
-            $errorMessage = $ex->getMessage();
+            $error_message = $ex->getMessage();
 
-            print_r($errorMessage);
+            print_r($error_message);
           }
         }
       }

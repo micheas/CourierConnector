@@ -1,9 +1,16 @@
 <?php
-//special object_ids in json
-//id - the id that is being passed in
-//object - the object that is being passed in
-//anything else will be looked up on the mapping
+/**
+ * @file
+ * special object_ids in json
+ * id - the id that is being passed in
+ * object - the object that is being passed in
+ * anything else will be looked up on the mapping
+ */
 
+/**
+ * @param $job_id
+ * @return object|string This should probably be fixed always return an object
+ */
 function courier_connector_retrieve_requests($job_id) {
   require_once 'courier_connector_mapping.inc';
 
@@ -13,7 +20,7 @@ function courier_connector_retrieve_requests($job_id) {
     return courier_connector_process_response($job_id);
   }
 
-  $request_parameters = file_get_contents(drupal_get_path('module', 'courier_connector_uber_7') . "/includes/" . "request_parameters.json");
+  $request_parameters = file_get_contents(drupal_get_path('module', 'courier_connector_uber') . "/includes/" . "request_parameters.json");
   $request_parameters = json_decode($request_parameters, TRUE);
 
   $jobs = array();

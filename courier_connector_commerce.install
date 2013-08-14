@@ -4,12 +4,17 @@
  * Install, update and uninstall functions Grossly incomplete.
  */
 
-
-function courier_connector_commerce_7_install() {
+/**
+ * Implements hook_install().
+ */
+function courier_connector_commerce_install() {
 
 }
 
-function courier_connector_commerce_7_uninstall() {
+/**
+ * Implements hook_uninstall().
+ */
+function courier_connector_commerce_uninstall() {
   // $sql = 'DROP TABLE geo_location_debug';
   //db_query($sql);
 }
@@ -18,7 +23,7 @@ function courier_connector_commerce_7_uninstall() {
 /**
  * Implements hook_schema().
  */
-function courier_connector_commerce_7_schema() {
+function courier_connector_commerce_schema() {
   $schema = array();
 
   $schema['courier_department_cache'] = array(

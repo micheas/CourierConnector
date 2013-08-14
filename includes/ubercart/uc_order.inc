@@ -1,4 +1,7 @@
 <?php
+/**
+ * @file deal with ubercart orders
+ */
 
 //function courier_ubercart_get_order_mapping()
 //{
@@ -42,20 +45,24 @@
 //    return $product_mapping;
 //}
 
-//processes a response xml
-function courier_connector_ubercart_process_order($objectType, $responseXml) {
+/**
+ * processes a response xml
+ * @param $object_type
+ * @param $response_xml
+ */
+function courier_connector_ubercart_process_order($object_type, $response_xml) {
   //write the error to some log if there was one
-  if ($responseXml->ErrorMessage != '') {
+  if ($response_xml->ErrorMessage != '') {
     //handle error
 
   }
 
   $order = uc_order_load(1);
 
-  $plural = $objectType . 's';
-  $id = $objectType . 'ID';
+  $plural = $object_type . 's';
+  $id = $object_type . 'ID';
 
-  foreach ($responseXml->$plural->$objectType as $order) {
+  foreach ($response_xml->$plural->$object_type as $order) {
     //check the processed tag, to see what we need to do with this response
     //4 possibles
     //error
@@ -134,7 +141,7 @@ function courier_connector_ubercart_process_order($objectType, $responseXml) {
             db_insert('courier_transaction_log')
               ->fields(array(
                 'type' => 1,
-                'message' => "Received " . $objectType . " from QuickBooks. TransactionNumber ID: " . $order->TransactionNumber . " adding order.",
+                'message' => "Received " . $object_type . " from QuickBooks. TransactionNumber ID: " . $order->TransactionNumber . " adding order.",
                 'status' => "OK"
               ))
               ->execute();
@@ -216,8 +223,8 @@ function courier_connector_ubercart_process_order($objectType, $responseXml) {
               //$product_mapping = courier_ubercart_get_product_line_mapping();
               $product_mapping = db_query("select * from {courier_order_product_mapping}");
 
-              $items = $objectType . 'LineItems';
-              $item = $objectType . 'LineItem';
+              $items = $object_type . 'LineItems';
+              $item = $object_type . 'LineItem';
 
               $products = array();
 
@@ -255,9 +262,9 @@ function courier_connector_ubercart_process_order($objectType, $responseXml) {
 
               uc_order_save($uc_order);
             } catch (Exception $ex) {
-              $errorMessage = $ex->getMessage();
+              $error_message = $ex->getMessage();
 
-              print_r($errorMessage);
+              print_r($error_message);
             }
           }
         }
@@ -270,7 +277,7 @@ function courier_connector_ubercart_process_order($objectType, $responseXml) {
 //objectType - The request type, valid: Invoice, SalesReceipt, SalesOrder, PurchaseOrder
 //args - array of the query arguments, refer to xml documents for valid list, the default will give all records
 //orderIDs - array of the ids of the orders that you whish to push down 
-function courier_ubercart_request_order($objectType, $args = array("FromModifiedDate" => "1-1-1990"), $ordersIDs = array()) {
+function courier_ubercart_request_order($object_type, $args = array("FromModifiedDate" => "1-1-1990"), $orders_ids = array()) {
   //$order_mapping = courier_ubercart_get_order_mapping();
   //$product_mapping = courier_ubercart_get_product_line_mapping();
   $order_mapping = db_query("select * from {courier_order_mapping}");
@@ -279,14 +286,14 @@ function courier_ubercart_request_order($objectType, $args = array("FromModified
   $orders = array();
 
   //get the orders that are defined in the orderIDs list
-  if (count($ordersIDs) > 0) {
-    foreach ($ordersIDs as $orderid) {
-      $orders[] = uc_order_load($orderid);
+  if (count($orders_ids) > 0) {
+    foreach ($orders_ids as $order_id) {
+      $orders[] = uc_order_load($order_id);
     }
   }
 
   //build the request
-  $doc = new SimpleXMLElement('<' . $objectType . "_Request" . ' />');
+  $doc = new SimpleXMLElement('<' . $object_type . "_Request" . ' />');
 
   //add the query args
   foreach ($args as $arg_name => $arg) {
@@ -311,11 +318,11 @@ function courier_ubercart_request_order($objectType, $args = array("FromModified
 
   if (count($orders) > 0) {
     //add the object we are pushing down
-    $objects = $doc->addChild($objectType . "s");
+    $objects = $doc->addChild($object_type . "s");
 
     //loop through each of the orders
     foreach ($orders as $ord) {
-      $object = $objects->addChild($objectType);
+      $object = $objects->addChild($object_type);
 
       //add the keys that are mapped from the order item to the xml
       foreach ($order_mapping as $map) {
@@ -352,13 +359,13 @@ function courier_ubercart_request_order($objectType, $args = array("FromModified
         $object->addChild("CustomerID", $qb_userid);
 
       if ($qb_orderid != '')
-        $object->addChild($objectType . "ID", $qb_orderid);
+        $object->addChild($object_type . "ID", $qb_orderid);
 
-      $products = $object->addChild($objectType . "LineItems");
+      $products = $object->addChild($object_type . "LineItems");
 
       //add the products
       foreach ($ord->products as $product) {
-        $prod = $products->addChild($objectType . "LineItem");
+        $prod = $products->addChild($object_type . "LineItem");
 
         //add the keys that are mapped from the order item to the xml
         foreach ($product_mapping as $map) {

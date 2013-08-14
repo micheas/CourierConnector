@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Converts a value to an int, only useful in QB->drupal
+ */
 
 /**
  * @param $value
